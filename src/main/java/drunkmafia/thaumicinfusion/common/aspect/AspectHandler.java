@@ -10,37 +10,39 @@ public class AspectHandler {
 
     private static ArrayList<Class> registeredEffects = new ArrayList<Class>();
 
-    public static void registerEffect(Class effect){
-        if(effect.isInstance(AspectEffect.class) && !registeredEffects.contains(effect))
+    public static void registerEffect(Class effect) {
+        if (effect.isInstance(AspectEffect.class) && !registeredEffects.contains(effect))
             registeredEffects.add(effect);
         else throw new IllegalArgumentException(ModInfo.ASPECT_EFFECT_REGISTER_ERROR);
     }
 
-    public static Class getEffectsClassFromAspect(Aspect aspect){
+    public static Class getEffectsClassFromAspect(Aspect aspect) {
         try {
             for (Class c : registeredEffects) {
-                AspectEffect effect = (AspectEffect)c.newInstance();
+                AspectEffect effect = (AspectEffect) c.newInstance();
                 Method m = c.getMethod("getAspect", new Class[]{});
                 Aspect aEffect = (Aspect) m.invoke(effect, new Class[]{});
-                if(aEffect.equals(aspect)) return c;
+                if (aEffect.equals(aspect)) return c;
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return null;
     }
 
-    public static AspectEffect getEffectFromAspect(Aspect aspect){
+    public static AspectEffect getEffectFromAspect(Aspect aspect) {
         try {
             for (Class c : registeredEffects) {
-                AspectEffect effect = (AspectEffect)c.newInstance();
+                AspectEffect effect = (AspectEffect) c.newInstance();
                 Method m = c.getMethod("getAspect", new Class[]{});
                 Aspect aEffect = (Aspect) m.invoke(effect, new Class[]{});
-                if(aEffect.equals(aspect)) return effect;
+                if (aEffect.equals(aspect)) return effect;
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return null;
     }
 
-    public static AspectEffect getEffectFromName(String effectName){
+    public static AspectEffect getEffectFromName(String effectName) {
         try {
             for (Class c : registeredEffects) {
                 String checkingEffect = c.getName();
@@ -48,7 +50,8 @@ public class AspectHandler {
                 effectName.toLowerCase();
                 if (checkingEffect.equals(effectName)) return (AspectEffect) c.newInstance();
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return null;
     }
 }

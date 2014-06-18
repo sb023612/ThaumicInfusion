@@ -24,7 +24,7 @@ public class InfusedItemRenderer implements IItemRenderer {
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         NBTTagCompound tag = item.stackTagCompound;
-        if(tag != null){
+        if (tag != null) {
             GL11.glPushMatrix();
 
             switch (type) {
@@ -40,7 +40,7 @@ public class InfusedItemRenderer implements IItemRenderer {
             TextureManager textMan = Minecraft.getMinecraft().getTextureManager();
             textMan.bindTexture(textMan.getResourceLocation(0));
             ItemStack stack = new ItemStack(Block.getBlockFromName(tag.getString("block")));
-            if(stack != null){
+            if (stack != null) {
                 RenderManager.instance.itemRenderer.renderItem(null, stack, 10);
             }
             GL11.glPopMatrix();

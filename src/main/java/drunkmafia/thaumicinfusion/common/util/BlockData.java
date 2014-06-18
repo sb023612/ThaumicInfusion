@@ -6,111 +6,76 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class BlockData {
+public class BlockData extends BlockSavable{
 
-    private ChunkCoordinates blockCoords;
-    private int infusedID, blockID;
+    private int infusedID;
 
-    private LinkedHashMap<String, MethodObj> dataMethods = new LinkedHashMap<String, MethodObj>();
-    private LinkedHashMap<String, String> dataObjs = new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, Class> methodClasses = new LinkedHashMap<String, Class>();
 
-    public BlockData(){}
-
-    public BlockData(ChunkCoordinates coordinates, Class[] list, int infusedID, int blockID){
-        blockCoords = coordinates;
+    public BlockData(Vector3F coords, Class[] list, int infusedID, int blockID) {
+        super(blockID, coords);
         this.infusedID = infusedID;
-        this.blockID = blockID;
         setupData(list);
     }
 
-    public void setupData(Class[] list){
-        for(Class effect : list) {
+    public void setupData(Class[] list) {
+        for (Class effect : list) {
             addMethods(effect.getClass());
         }
         addMethods(Block.getBlockById(infusedID).getClass());
     }
 
-    public void addMethods(Class c){
+    public void addMethods(Class c) {
         try {
-            Object obj = c.newInstance();
             for (Method meth : c.getDeclaredMethods()) {
-                if (!dataObjs.containsKey(meth.getName())) dataObjs.put(meth.getName(), c.getName());
-                if (!dataMethods.containsKey(c.getName())) dataMethods.put(c.getName(), new MethodObj(obj, meth));
+                if(!methodClasses.containsKey(meth.getName()))methodClasses.put(meth.getName(), c);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Object runMethod(String methName, Object... pars){
-        try{
-            MethodObj obJ = dataMethods.get(dataObjs.get(methName));
-            return obJ.getMeth().invoke(obJ.getObj(), pars);
-        }catch (Exception e){
+    public Object runMethod(String methName, Object... pars) {
+        try {
+            Method meth = methodClasses.get(methName).getDeclaredMethod(methName, (Class[])pars);
+            if(meth != null) return meth.invoke(methodClasses.get(methName), pars);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public Block getBlock(){
+    public Block getBlock() {
         return Block.getBlockById(infusedID);
     }
 
-    public ArrayList<MethodObj> getAllObjs(){
-        ArrayList<MethodObj> objs = new ArrayList<MethodObj>();
-        Iterator iterator = dataObjs.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry entry = (Map.Entry) iterator.next();
-            if(!objs.contains(entry.getValue())) objs.add((MethodObj) entry.getValue());
+    public void writeTag(NBTTagCompound tagCompound) {
+        Object[] objects = methodClasses.entrySet().toArray();
+        tagCompound.setInteger("length", objects.length);
+        for(int i = 0; i < objects.length; i++){
+            Map.Entry entry = (Map.Entry) objects[i];
+            tagCompound.setString("Method:" + i, (String)entry.getKey());
+            tagCompound.setString("Class:" + i, ((Class)entry.getValue()).getName());
         }
-        return objs;
+
+        tagCompound.setInteger("InfusedID", infusedID);
     }
 
-    public ChunkCoordinates getBlockCoords(){
-        return blockCoords;
-    }
-
-    public void writeTag(NBTTagCompound tagCompound){
-        ArrayList<MethodObj> objs = getAllObjs();
-        tagCompound.setInteger("obj_size", objs.size());
-        for(int i = 0; i < objs.size(); i++) {
-            MethodObj obj = objs.get(i);
-            if(obj.getObj() instanceof AspectEffect){
-                AspectEffect effect = (AspectEffect) obj.getObj();
-                NBTTagCompound effectTag = new NBTTagCompound();
-                effect.readTag(effectTag);
-                tagCompound.setTag("obj_" + i, effectTag);
+    public void readTag(NBTTagCompound tagCompound) {
+        try {
+            for (int i = 0; i < tagCompound.getInteger("length"); i++) {
+                methodClasses.put(tagCompound.getString("Method:" + i), Class.forName(tagCompound.getString("Class:" + i)));
             }
+        }catch (Exception e){
+            System.out.println("Failed to load class when reading data");
+            e.printStackTrace();
         }
-        tagCompound.setInteger("blockID", blockID);
-        tagCompound.setInteger("infusedID", infusedID);
-        tagCompound.setIntArray("coords", new int[] {blockCoords.posX, blockCoords.posY, blockCoords.posZ});
-    }
 
-    public void readTag(NBTTagCompound tagCompound){
-        AspectEffect[] effects = new AspectEffect[tagCompound.getInteger("obj_size")];
-        for(int i = 0; i < effects.length; i++){
-
-        }
-    }
-}
-
-class MethodObj{
-    private Object obj;
-    private Method linkedMeth;
-
-    public MethodObj(Object obj, Method linkedMeth){
-        this.obj = obj;
-        this.linkedMeth = linkedMeth;
-    }
-
-    public Object getObj(){
-        return obj;
-    }
-
-    public Method getMeth(){
-        return linkedMeth;
+        infusedID = tagCompound.getInteger("InfusedID");
     }
 }

@@ -9,12 +9,12 @@ public class TITab {
 
     public static CreativeTabs tab;
 
-    public static void init(){
+    public static void init() {
         tab = new Tab();
     }
 }
 
-class Tab extends CreativeTabs{
+class Tab extends CreativeTabs {
 
     public Tab() {
         super(ModInfo.CREATIVETAB_UNLOCAL);

@@ -9,7 +9,7 @@ public class TIBlocks {
 
     public static Block infusedBlock;
 
-    public static void init(){
+    public static void init() {
         infusedBlock = new InfusedBlock();
 
         GameRegistry.registerBlock(infusedBlock, infusedBlock_RegistryName);
