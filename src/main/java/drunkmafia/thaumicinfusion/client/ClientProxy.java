@@ -5,6 +5,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import drunkmafia.thaumicinfusion.client.renderer.item.InfusedItemRenderer;
 import drunkmafia.thaumicinfusion.common.CommonProxy;
+import drunkmafia.thaumicinfusion.common.ThaumicInfusion;
 import drunkmafia.thaumicinfusion.common.block.TIBlocks;
 import drunkmafia.thaumicinfusion.common.item.TIItems;
 import drunkmafia.thaumicinfusion.common.tab.TITab;
@@ -14,7 +15,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         System.out.println("PreInit " + event.getSide().name());
-        isServer = event.getSide().isServer();
+        ThaumicInfusion.instance.isServer = event.getSide().isServer();
 
         TITab.init();
 

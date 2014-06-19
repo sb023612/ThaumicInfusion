@@ -22,21 +22,20 @@ public class ThaumicInfusion {
     @SidedProxy(clientSide = CLIENT_PROXY_PATH, serverSide = COMMON_PROXY_PATH)
     public static CommonProxy proxy;
 
+    public boolean isServer;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        FMLLog.info("TI: Initialization");
         proxy.preInit(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        FMLLog.info("TI: Initialization");
         proxy.init(event);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        FMLLog.info("TI: Post Initialization");
         proxy.postInit(event);
     }
 
