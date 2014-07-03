@@ -1,99 +1,87 @@
 package drunkmafia.thaumicinfusion.common.util;
 
-import drunkmafia.thaumicinfusion.common.aspect.AspectEffect;
+import drunkmafia.thaumicinfusion.common.CommonProxy;
 import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
 import drunkmafia.thaumicinfusion.common.block.TIBlocks;
-import drunkmafia.thaumicinfusion.common.item.TIItems;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class InfusionHelper {
 
-    public static int getBlockID(ItemStack stack, Class[] aspects) {
-        AspectEffect[] effects = getEffectsFromClasses(aspects);
+    public static int getBlockID(Class[] aspects){
         int defBlock = Block.getIdFromBlock(TIBlocks.infusedBlock);
-        for (AspectEffect effect : effects) {
-            int effectBlock = Block.getIdFromBlock(effect.getBlock());
-            if (effectBlock != defBlock) {
-                return effectBlock;
+        try {
+            for (Class c : aspects) {
+                Method meth = c.getMethod("getBlock", new Class[]{});
+                if(meth != null){
+                    int id = Block.getIdFromBlock((Block) meth.invoke(c.newInstance()));
+                    if (id != defBlock) {
+                        return id;
+                    }
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return defBlock;
     }
 
-    public static int getInfusedID(ItemStack stack) {
+    public static int getInfusedID(ItemStack stack){
         NBTTagCompound tag = stack.getTagCompound();
-        if (tag != null) {
+        if(tag != null) {
             return tag.getInteger("infusedID");
         }
         return -1;
     }
 
-    public static AspectList getAspectsFromStack(ItemStack stack) {
-        AspectList list = new AspectList();
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag != null) {
-            for (int i = 0; i < tag.getInteger("infusedAspect_Size"); i++) {
-                list.add(Aspect.getAspect(tag.getString("infusedAspect_" + i)), 8);
-            }
-        }
-        return list;
-    }
-
-    public static AspectEffect[] getEffectsFromStack(ItemStack stack) {
-        Aspect[] aspects = getAspectsFromStack(stack).getAspects();
-        if (aspects.length > 0) {
-            AspectEffect[] effects = new AspectEffect[aspects.length];
+    public static Class[] getEffectsFromStack(ItemStack stack){
+        NBTTagCompound tag = stack.stackTagCompound;
+        Class[] effects = new Class[tag.getInteger("infusedAspect_Size")];
             for (int i = 0; i < effects.length; i++) {
-                effects[i] = AspectHandler.getEffectFromAspect(aspects[i]);
+                try {
+                    Class c = Class.forName(tag.getString("infusedAspect_" + i));
+                    if(c != null) effects[i] = c;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
-            return effects;
-        }
-        return null;
-    }
-
-    public static Class[] getEffectsClassFromStack(ItemStack stack) {
-        Aspect[] aspects = getAspectsFromStack(stack).getAspects();
-        if (aspects.length > 0) {
-            Class[] effects = new Class[aspects.length];
-            for (int i = 0; i < effects.length; i++) {
-                effects[i] = AspectHandler.getEffectsClassFromAspect(aspects[i]);
-            }
-            return effects;
-        }
-        return null;
-    }
-
-    public static AspectEffect[] getEffectsFromClasses(Class[] classes) {
-        try {
-            AspectEffect[] effects = new AspectEffect[classes.length];
-            for (int i = 0; i < effects.length; i++) {
-                effects[i] = (AspectEffect) classes[i].newInstance();
-            }
-        } catch (Exception e) {
-        }
-        return null;
-    }
-
-    public static AspectEffect[] getEffectsFromAspects(AspectList list) {
-        AspectEffect[] effects = new AspectEffect[list.size()];
-        Aspect[] aspects = list.getAspects();
-        for (int i = 0; i < effects.length; i++) effects[i] = AspectHandler.getEffectFromAspect(aspects[i]);
         return effects;
     }
 
-    public static ItemStack getInfusedItemStack(AspectList list, int infusedID, int size, int meta) {
-        Aspect[] aspects = list.getAspects();
-        ItemStack stack = new ItemStack(TIItems.infusedBlock, meta, size);
-        NBTTagCompound tag = new NBTTagCompound();
-        stack.writeToNBT(tag);
-        for (int i = 0; i < aspects.length; i++) {
-            tag.setString("infusedAspect_" + i, aspects[i].getTag());
+    public static ArrayList<ArrayList<Aspect>> getAspectsFromEffects(Class[] classes){
+        ArrayList<ArrayList<Aspect>> aspects = new ArrayList<ArrayList<Aspect>>();
+        for(Class c : classes){
+            aspects.add(AspectHandler.getAspectsFromEffect(c));
         }
-        tag.setInteger("infusedAspect_Size", aspects.length);
+        return aspects;
+    }
+
+    private static Class[] getEffectsFromList(ArrayList<ArrayList<Aspect>> list) {
+        Class[] effects = new Class[list.size()];
+        for(int i = 0; i < effects.length; i++){
+            effects[i] = AspectHandler.getEffectFromList(list.get(i));
+        }
+        return effects;
+    }
+
+    public static ItemStack getInfusedItemStack(ArrayList<ArrayList<Aspect>> list, int infusedID, int size, int meta){
+        System.out.println("Infusion");
+        if(list == null) return null;
+        Class[] effects = getEffectsFromList(list);
+        ItemStack stack = new ItemStack(TIBlocks.infusedBlock, size);
+        NBTTagCompound tag = new NBTTagCompound();
+        for(int i = 0; i < effects.length; i++){
+            tag.setString("infusedAspect_" + i, effects[i].getName());
+        }
+        tag.setInteger("infusedAspect_Size", effects.length);
+        tag.setInteger("infusedID", infusedID);
+        tag.setInteger("infusedMETA", meta);
         stack.setTagCompound(tag);
         return stack;
     }

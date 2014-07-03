@@ -1,33 +1,53 @@
 package drunkmafia.thaumicinfusion.common.util;
 
+import cpw.mods.fml.common.FMLLog;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChunkCoordinates;
+
+import java.util.ArrayList;
 
 /**
- * Created by DrunkMafia on 18/06/2014.
+ * Created by DrunkMafia on 29/06/2014.
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
-public class BlockSavable implements ISavable {
-    public int blockID;
-    public Vector3F coords;
+public class BlockSavable {
 
-    public BlockSavable(){};
+    private ChunkCoordinates coordinates;
 
-    public BlockSavable(int blockID, Vector3F coords){
-        this.blockID = blockID;
-        this.coords = coords;
+    public BlockSavable(){}
+
+    public static BlockSavable loadDataFromNBT(NBTTagCompound tag){
+        if(tag.hasKey("class")) {
+            try {
+                Class c = Class.forName(tag.getString("class"));
+                if(c.getSuperclass() == BlockSavable.class) {
+                    BlockSavable data = (BlockSavable) c.newInstance();
+                    data.readNBT(tag);
+                    return data;
+                }
+            }catch (Exception e){
+                FMLLog.bigWarning("TI: Failed to load data, block is now at risk of causing errors");
+            }
+        }
+        return null;
     }
 
-    @Override
-    public void readTag(NBTTagCompound tag) {
-        blockID = tag.getInteger("BlockID");
-        int[] coordInts = tag.getIntArray("coords");
-        coords = new Vector3F(coordInts[0], coordInts[1], coordInts[2]);
+    public BlockSavable(ChunkCoordinates coordinates){
+        this.coordinates = coordinates;
     }
 
-    @Override
-    public void writeTag(NBTTagCompound tag) {
-        tag.setInteger("BlockID", blockID);
-        tag.setIntArray("coords", new int[] {(int)coords.x, (int)coords.y, (int)coords.z});
+    public ChunkCoordinates getCoords(){
+        return coordinates;
+    }
+
+    public void writeNBT(NBTTagCompound tagCompound){
+        tagCompound.setString("class", this.getClass().getCanonicalName());
+        tagCompound.setIntArray("coords", new int[] {coordinates.posX, coordinates.posY, coordinates.posZ});
+    }
+
+    public void readNBT(NBTTagCompound tagCompound){
+        int[] coords = tagCompound.getIntArray("coords");
+        coordinates = new ChunkCoordinates(coords[0], coords[1], coords[2]);
     }
 }

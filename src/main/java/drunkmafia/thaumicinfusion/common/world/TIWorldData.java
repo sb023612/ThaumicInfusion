@@ -1,16 +1,15 @@
 package drunkmafia.thaumicinfusion.common.world;
 
 import drunkmafia.thaumicinfusion.common.util.BlockSavable;
-import drunkmafia.thaumicinfusion.common.util.ISavable;
-import drunkmafia.thaumicinfusion.common.util.Vector3F;
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.chunk.Chunk;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by DrunkMafia on 18/06/2014.
@@ -19,82 +18,71 @@ import java.util.Set;
  */
 public class TIWorldData extends WorldSavedData {
 
-    private HashMap<Integer, HashMap<Vector3F, BlockSavable>> blocksData;
+    private HashMap<ChunkCoordinates, BlockSavable> blocksData;
 
-    public TIWorldData(String worldName){
-        super("TIData_" + worldName);
-        blocksData = new HashMap<Integer, HashMap<Vector3F, BlockSavable>>();
+    public TIWorldData(String mapname){
+        super(mapname);
+        blocksData = new HashMap<ChunkCoordinates, BlockSavable>();
+        setDirty(true);
     }
 
-    public void addBlock(BlockSavable block){
-        if(block != null && block.blockID != 0 && block.coords != null){
-            if(blocksData.containsKey(block.blockID)){
-                blocksData.get(block.blockID).put(block.coords, block);
-            }else{
-                HashMap<Vector3F, BlockSavable> newMap = new HashMap<Vector3F, BlockSavable>();
-                newMap.put(block.coords, block);
-                blocksData.put(block.blockID, newMap);
-            }
-        }else{
-            System.out.println("Failed to add block due to a null value");
+    public boolean addBlock(BlockSavable block){
+        if(block != null && block.getCoords() != null){
+            blocksData.put(block.getCoords(), block);
+            setDirty(true);
+            return true;
         }
-        markDirty();
+        return false;
     }
 
-    public void removeBlock(Vector3F coords){
-        Object[] ids = blocksData.entrySet().toArray();
-        for(int i = 0; i < ids.length; i++){
-            if(blocksData.get(((Map.Entry) ids[i]).getKey()).containsKey(coords))
-                blocksData.get(((Map.Entry) ids[i]).getKey()).remove(coords);
+    public void removeBlock(ChunkCoordinates coords){
+        blocksData.remove(coords);
+        setDirty(true);
+    }
+
+    public BlockSavable getBlock(ChunkCoordinates coords){
+        return blocksData.get(coords);
+    }
+
+    public ArrayList<BlockSavable> getBlocksInChunk(Chunk chunk){
+        World world = chunk.worldObj;
+        Object[] blocks = blocksData.entrySet().toArray();
+        ArrayList<BlockSavable> data = new ArrayList<BlockSavable>();
+        for(Object obj : blocks){
+            BlockSavable block = (BlockSavable)((Map.Entry) obj).getValue();
+            if(world.getChunkFromBlockCoords(block.getCoords().posX, block.getCoords().posZ).isAtLocation(chunk.xPosition, chunk.zPosition))
+                data.add(block);
         }
-        markDirty();
+        return data;
     }
 
-    public BlockSavable getBlock(Vector3F coords){
-        Object[] ids = blocksData.entrySet().toArray();
-        for(int i = 0; i < ids.length; i++){
-            if(blocksData.get(((Map.Entry) ids[i]).getKey()).containsKey(coords))
-                return (BlockSavable) blocksData.get(((Map.Entry) ids[i]).getKey()).get(coords);
+    public int getNoOfBlocks(){
+        int amount = 0;
+        Object[] ents = blocksData.entrySet().toArray();
+        for(Object obj : ents){
+            Map.Entry ent = (Map.Entry) obj;
+            amount += ((HashMap)ent.getValue()).size();
         }
-        return null;
-    }
-
-    public void removeBlock(BlockSavable data){
-        removeBlock(data.coords);
+        return amount;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
-        System.out.println("World data reading");
-        for(int i = 0; i < tag.getInteger("IDS"); i++){
-            HashMap<Vector3F, BlockSavable> blocks = new HashMap<Vector3F, BlockSavable>();
-            for(int b = 0; b < tag.getInteger("ID:" + i + "B_Length"); b++){
-                BlockSavable block = new BlockSavable();
-                block.readTag(tag.getCompoundTag("ID:" + i + "B:" + b));
-                blocks.put(block.coords, block);
-            }
-            blocksData.put(tag.getInteger("ID:" + i + "B_ID"), blocks);
+        for(int i = 0; i < tag.getInteger("Size"); i++){
+            BlockSavable data = BlockSavable.loadDataFromNBT(tag.getCompoundTag("Tag: " + i));
+            if(data != null)
+                blocksData.put(data.getCoords(), data);
         }
-        System.out.println("World data finished reading");
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tag) {
-        System.out.println("World data writing");
-        Object[] ids = blocksData.entrySet().toArray();
-        tag.setInteger("IDS" , ids.length);
-        for(int i = 0; i < ids.length; i++){
-            Map.Entry idEnt = (Map.Entry) ids[i];
-            Object[] blocks = ((HashMap<Vector3F, ISavable>) idEnt.getValue()).entrySet().toArray();
-            tag.setInteger("ID:" + i + "B_ID", (Integer)idEnt.getKey());
-            tag.setInteger("ID:" + i + "B_Length", blocks.length);
-            for(int b = 0; b < blocks.length; b++){
-                BlockSavable blockSavable = (BlockSavable)((Map.Entry)blocks[b]).getValue();
-                NBTTagCompound saveTag = new NBTTagCompound();
-                blockSavable.writeTag(saveTag);
-                tag.setTag("ID:" + i + "B:" + b, saveTag);
-            }
+        Object[] objs = blocksData.entrySet().toArray();
+        tag.setInteger("Size", objs.length);
+        for(int i = 0; i < objs.length; i++){
+            NBTTagCompound dataTag = new NBTTagCompound();
+            blocksData.get(((Map.Entry) objs[i]).getKey()).writeNBT(dataTag);
+            tag.setTag("Tag: " + i, dataTag);
         }
-        System.out.println("World data finished writeing");
     }
 }

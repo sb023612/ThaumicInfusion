@@ -3,54 +3,47 @@ package drunkmafia.thaumicinfusion.common.aspect;
 import drunkmafia.thaumicinfusion.common.lib.ModInfo;
 import thaumcraft.api.aspects.Aspect;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AspectHandler {
 
-    private static ArrayList<Class> registeredEffects = new ArrayList<Class>();
+    private static HashMap<ArrayList<Aspect>, Class> registeredEffects = new HashMap<ArrayList<Aspect>, Class>();
 
-    public static void registerEffect(Class effect) {
-        if (effect.isInstance(AspectEffect.class) && !registeredEffects.contains(effect))
-            registeredEffects.add(effect);
-        else throw new IllegalArgumentException(ModInfo.ASPECT_EFFECT_REGISTER_ERROR);
-    }
-
-    public static Class getEffectsClassFromAspect(Aspect aspect) {
+    public static void registerEffect(Aspect[] aspects, Class effect) {
         try {
-            for (Class c : registeredEffects) {
-                AspectEffect effect = (AspectEffect) c.newInstance();
-                Method m = c.getMethod("getAspect", new Class[]{});
-                Aspect aEffect = (Aspect) m.invoke(effect, new Class[]{});
-                if (aEffect.equals(aspect)) return c;
+            Object obj = effect.newInstance();
+            if (aspects.length != 0 && obj instanceof AspectEffect && !registeredEffects.containsKey(aspects) && !registeredEffects.containsValue(effect))
+                registeredEffects.put(toArrayToList(aspects), effect);
+            else {
+                if (aspects.length == 0)
+                    throw new IllegalArgumentException(ModInfo.ASPECT_EFFECT_REGISTER_ERROR + ": Aspects are empty");
+                if (!(obj instanceof AspectEffect))
+                    throw new IllegalArgumentException(ModInfo.ASPECT_EFFECT_REGISTER_ERROR + ": Effect is not the correct instance");
+                if (registeredEffects.containsKey(aspects) || registeredEffects.containsValue(effect))
+                    throw new IllegalArgumentException(ModInfo.ASPECT_EFFECT_REGISTER_ERROR + ": Already registered");
             }
-        } catch (Exception e) {
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        return null;
     }
 
-    public static AspectEffect getEffectFromAspect(Aspect aspect) {
-        try {
-            for (Class c : registeredEffects) {
-                AspectEffect effect = (AspectEffect) c.newInstance();
-                Method m = c.getMethod("getAspect", new Class[]{});
-                Aspect aEffect = (Aspect) m.invoke(effect, new Class[]{});
-                if (aEffect.equals(aspect)) return effect;
-            }
-        } catch (Exception e) {
-        }
-        return null;
+    public static ArrayList<Aspect> toArrayToList(Aspect[] aspects){
+        ArrayList<Aspect> list = new ArrayList<Aspect>();
+        for(Aspect aspect : aspects) list.add(aspect);
+        return list;
     }
 
-    public static AspectEffect getEffectFromName(String effectName) {
-        try {
-            for (Class c : registeredEffects) {
-                String checkingEffect = c.getName();
-                checkingEffect.toLowerCase();
-                effectName.toLowerCase();
-                if (checkingEffect.equals(effectName)) return (AspectEffect) c.newInstance();
-            }
-        } catch (Exception e) {
+    public static Class getEffectFromList(ArrayList<Aspect> aspects){
+        return registeredEffects.get(aspects);
+    }
+
+    public static ArrayList<Aspect> getAspectsFromEffect(Class effect){
+        Object[] entries = registeredEffects.entrySet().toArray();
+        for(int i = 0; i < entries.length; i++) {
+            Map.Entry ent = (Map.Entry) entries[i];
+            if(((Class)ent.getValue()).isInstance(effect)) return (ArrayList<Aspect>) ent.getKey();
         }
         return null;
     }

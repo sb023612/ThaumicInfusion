@@ -1,28 +1,22 @@
 package drunkmafia.thaumicinfusion.common;
 
-import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
-import drunkmafia.thaumicinfusion.common.block.TIBlocks;
-import drunkmafia.thaumicinfusion.common.commands.SpawnInfusedBlockCommand;
-import drunkmafia.thaumicinfusion.common.item.TIItems;
-import drunkmafia.thaumicinfusion.common.tab.TITab;
+
+import static drunkmafia.thaumicinfusion.common.block.TIBlocks.*;
 
 public class CommonProxy {
 
-    public boolean isServer;
-
     public void preInit(FMLPreInitializationEvent event) {
         System.out.println("PreInit " + event.getSide().name());
-        isServer = event.getSide().isServer();
-
-        TITab.init();
-
-        TIBlocks.init();
-        TIItems.init();
+        ThaumicInfusion.isServer = event.getSide().isServer();
+        initBlocks();
     }
 
     public void init(FMLInitializationEvent event) {
         System.out.println("Init " + event.getSide().name());
+
+        //initRecipies();
+
     }
 
     public void postInit(FMLPostInitializationEvent event) {

@@ -7,6 +7,7 @@ public class ModInfo {
     public static final String MODID_INFO = "thaumicinfusion";
     public static final String NAME_INFO = "Thaumic Infusion";
     public static final String VERSION_INFO = "0.01 Pre-Alpha";
+    public static final String CHANNEL = MODID_INFO.toUpperCase();
 
     /* Classpaths */
 
@@ -23,5 +24,6 @@ public class ModInfo {
     /* Additional Information */
 
     public static final String CREATIVETAB_UNLOCAL = "thaumicinfusion";
+    public static final String EXTRA_INFO_XML = "https://dl.dropboxusercontent.com/u/101919880/Thaumic%20Infusion/ThaumicInfusion.xml";
 
 }
