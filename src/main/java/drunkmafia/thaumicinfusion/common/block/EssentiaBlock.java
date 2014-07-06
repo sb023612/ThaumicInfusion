@@ -40,6 +40,7 @@ public class EssentiaBlock extends Block {
         setCreativeTab(TITab.tab);
         setBlockName(essentiaBlock_UnlocalizedName);
         setHardness(1.5F);
+        setLightLevel(1F);
         setResistance(10.0F);
     }
 

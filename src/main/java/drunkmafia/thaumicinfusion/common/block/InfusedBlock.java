@@ -68,14 +68,6 @@ public class InfusedBlock extends Block {
     }
 
     @Override
-    public int getLightValue(IBlockAccess access, int x, int y, int z) {
-        BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData)((BlockData)blockData).runMethod("getLightValue", new Class[] {IBlockAccess.class, Integer.class, Integer.class, Integer.class}, access, x, y, z);
-        return 0;
-    }
-
-    /**
-    @Override
     public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
         if(blockData != null && blockData instanceof BlockData)((BlockData)blockData).runMethod("setBlockBoundsBasedOnState", access, x, y, z);
@@ -126,301 +118,410 @@ public class InfusedBlock extends Block {
     @Override
     public int isProvidingWeakPower(IBlockAccess access, int x, int y, int z, int meta) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("isProvidingWeakPower", access, x, y, z, meta);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isProvidingWeakPower", access, x, y, z, meta);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int isProvidingStrongPower(IBlockAccess access, int x, int y, int z, int meta) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("isProvidingStrongPower", access, x, y, z, meta);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isProvidingStrongPower", access, x, y, z, meta);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int getLightValue(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        //if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getLightValue", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj =  ((BlockData)blockData).runMethod("getLightValue", access, x, y, z);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int getLightOpacity(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getLightOpacity", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj =  ((BlockData)blockData).runMethod("getLightOpacity", access, x, y, z);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int getFlammability(IBlockAccess access, int x, int y, int z, ForgeDirection face) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getFlammability", access, x, y, z, face);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getFlammability", access, x, y, z, face);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int getFireSpreadSpeed(IBlockAccess access, int x, int y, int z, ForgeDirection face) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getFireSpreadSpeed", access, x, y, z, face);
-        return 0;
-    }
-
-    @Override
-    public int getMixedBrightnessForBlock(IBlockAccess access, int x, int y, int z) {
-        BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getMixedBrightnessForBlock", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getFireSpreadSpeed", access, x, y, z, face);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public int colorMultiplier(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("colorMultiplier", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("colorMultiplier", access, x, y, z);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public ForgeDirection[] getValidRotations(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (ForgeDirection[]) ((BlockData)blockData).runMethod("getValidRotations", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData) {
+            Object obj = ((BlockData)blockData).runMethod("getValidRotations", world, x, y, z);
+            if (obj != null) return (ForgeDirection[]) obj;
+        }
         return null;
     }
 
     @Override
     public float getPlayerRelativeBlockHardness(EntityPlayer player, World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Float) ((BlockData)blockData).runMethod("getPlayerRelativeBlockHardness", player, world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getPlayerRelativeBlockHardness", player, world, x, y, z);
+            if (obj != null) return (Float) obj;
+        }
         return 0;
     }
 
     @Override
     public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Integer) ((BlockData)blockData).runMethod("getComparatorInputOverride", world, x, y, z, side);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getComparatorInputOverride", world, x, y, z, side);
+            if (obj != null) return (Integer) obj;
+        }
         return 0;
     }
 
     @Override
     public float getExplosionResistance(Entity ent, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Float) ((BlockData)blockData).runMethod("getExplosionResistance", ent, world, x, y, z, explosionX, explosionY, explosionZ);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getExplosionResistance", ent, world, x, y, z, explosionX, explosionY, explosionZ);
+            if (obj != null) return (Float) obj;
+        }
         return 0;
     }
 
     @Override
     public float getBlockHardness(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Float) ((BlockData)blockData).runMethod("getBlockHardness", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getBlockHardness", world, x, y, z);
+            if (obj != null) return (Float) obj;
+        }
         return 0;
     }
 
     @Override
     public boolean shouldCheckWeakPower(IBlockAccess access, int x, int y, int z, int side) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("shouldCheckWeakPower", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("shouldCheckWeakPower", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public float getEnchantPowerBonus(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Float) ((BlockData)blockData).runMethod("getEnchantPowerBonus", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getEnchantPowerBonus", world, x, y, z);
+            if (obj != null) return (Float) obj;
+        }
         return 0;
     }
 
     @Override
     public boolean shouldSideBeRendered(IBlockAccess access, int x, int y, int z, int side) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("shouldSideBeRendered", access, x, y, z);
-        return false;
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("shouldSideBeRendered", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
+        return true;
     }
 
     @Override
     public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("rotateBlock", world, x, y, z, axis);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("rotateBlock", world, x, y, z, axis);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean recolourBlock(World world, int x, int y, int z, ForgeDirection side, int colour) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("recolourBlock", world, x, y, z, side, colour);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("recolourBlock", world, x, y, z, side, colour);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("onBlockActivated", world, x, y, z, player, hitX, hitY, hitZ);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("onBlockActivated", world, x, y, z, player, hitX, hitY, hitZ);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isWood(IBlockAccess world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isWood", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isWood", world, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isSideSolid(IBlockAccess access, int x, int y, int z, ForgeDirection side) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isSideSolid", access, x, y, z);
-        return false;
-    }
-
-    @Override
-    public boolean isAir(IBlockAccess access, int x, int y, int z) {
-        BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isAir", access, x, y, z);
-        return false;
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isSideSolid", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
+        return true;
     }
 
     @Override
     public boolean isBeaconBase(IBlockAccess access, int x, int y, int z, int beaconX, int beaconY, int beaconZ) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isBeaconBase", access, x, y, z, beaconX, beaconY, beaconZ);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isBeaconBase", access, x, y, z, beaconX, beaconY, beaconZ);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isBed(IBlockAccess access, int x, int y, int z, EntityLivingBase player) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isBed", access, x, y, z, player);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isBed", access, x, y, z, player);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isBedFoot(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isBedFoot", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isBedFoot", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isBlockSolid(IBlockAccess access, int x, int y, int z, int meta) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isBlockSolid", access, x, y, z, meta);
-        return false;
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isBlockSolid", access, x, y, z, meta);
+            if (obj != null) return (Boolean) obj;
+        }
+        return true;
     }
 
     @Override
     public boolean isBurning(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isBurning", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isBurning", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isFertile(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isFertile", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isFertile", world, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isFireSource(World world, int x, int y, int z, ForgeDirection side) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isFireSource", world, x, y, z, side);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isFireSource", world, x, y, z, side);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isFlammable(IBlockAccess access, int x, int y, int z, ForgeDirection face) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isFlammable", access, x, y, z, face);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isFlammable", access, x, y, z, face);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isFoliage(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isFoliage", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isFoliage", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isLadder(IBlockAccess access, int x, int y, int z, EntityLivingBase entity) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isLadder", access, x, y, z, entity);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isLadder", access, x, y, z, entity);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isLeaves(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isLeaves", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isLeaves", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isNormalCube(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isNormalCube", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isNormalCube", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean isReplaceable(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("isReplaceable", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("isReplaceable", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canPlaceTorchOnTop(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canPlaceTorchOnTop", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canPlaceTorchOnTop", world, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canSustainPlant(IBlockAccess access, int x, int y, int z, ForgeDirection direction, IPlantable plantable) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canSustainPlant", access, x, y, z, direction, plantable);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canSustainPlant", access, x, y, z, direction, plantable);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canSustainLeaves(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canSustainLeaves", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canSustainLeaves", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean getWeakChanges(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("getWeakChanges", access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("getWeakChanges", access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canConnectRedstone(IBlockAccess access, int x, int y, int z, int side) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canConnectRedstone", access, x, y, z, side);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canConnectRedstone", access, x, y, z, side);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canEntityDestroy(IBlockAccess access, int x, int y, int z, Entity entity) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canEntityDestroy", access, x, y, z, entity);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canEntityDestroy", access, x, y, z, entity);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canCreatureSpawn", type, access, x, y, z);
+        if(blockData != null && blockData instanceof BlockData){
+            Object obj = ((BlockData)blockData).runMethod("canCreatureSpawn", type, access, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
     }
 
     @Override
     public boolean canBlockStay(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-        if(blockData != null && blockData instanceof BlockData) return (Boolean) ((BlockData)blockData).runMethod("canBlockStay", world, x, y, z);
+        if(blockData != null && blockData instanceof BlockData) {
+            Object obj = ((BlockData) blockData).runMethod("canBlockStay", world, x, y, z);
+            if (obj != null) return (Boolean) obj;
+        }
         return false;
-    }**/
+    }
 }
