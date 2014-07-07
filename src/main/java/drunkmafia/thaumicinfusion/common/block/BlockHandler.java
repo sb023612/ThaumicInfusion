@@ -5,6 +5,7 @@ import net.minecraft.world.IBlockAccess;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by DrunkMafia on 04/07/2014.
@@ -17,10 +18,20 @@ public class BlockHandler {
     private static ArrayList<Method> blackListedMethods = new ArrayList<Method>();
 
     static{
-        try {
-            blackListedMethods.add(Block.class.getDeclaredMethod("getLightValue", new Class[] {IBlockAccess.class, Integer.class, Integer.class, Integer.class}));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        String[] methNames = {
+                "getLightValue"
+        };
+
+        Class[][] pars = {
+                new Class[] {IBlockAccess.class, Integer.class, Integer.class, Integer.class}
+        };
+
+        Method[] meths = Block.class.getDeclaredMethods();
+        for(Method meth : meths){
+            int index = Arrays.asList(methNames).indexOf(meth);
+            if(index != -1 && meth.getParameterTypes().equals(pars[index])){
+                blackListedMethods.add(meth);
+            }
         }
     }
 

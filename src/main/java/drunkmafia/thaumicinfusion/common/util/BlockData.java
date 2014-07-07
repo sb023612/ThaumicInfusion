@@ -76,17 +76,9 @@ public class BlockData extends BlockSavable{
             return runBlockMethods(methName, pars);
         }catch (Exception e){
             System.out.println("Failed To Run: " + methName);
-            e.printStackTrace();
+            for(Class c : objsToClasses(pars)) System.out.println(c.getName());
         }
         return null;
-    }
-
-    public Method getMethodFromOBJ(Object object, String methName, Class[] pars) throws Exception{
-        if(object.getClass().getDeclaredMethod(methName, pars) != null){
-            return object.getClass().getDeclaredMethod(methName, pars);
-        }else{
-            return object.getClass().getMethod(methName, pars);
-        }
     }
 
     public Block getContainingBlock() {

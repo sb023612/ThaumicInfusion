@@ -66,6 +66,7 @@ public class InfusedBlock extends Block {
             ChannelHandler.network.sendToAll(new BlockDestroyedPacketC(blockData.getCoords()));
         }
     }
+/**
 
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess access, int x, int y, int z) {
@@ -174,7 +175,7 @@ public class InfusedBlock extends Block {
         }
         return 0;
     }
-
+**/
     @Override
     public int colorMultiplier(IBlockAccess access, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
@@ -184,7 +185,7 @@ public class InfusedBlock extends Block {
         }
         return 0;
     }
-
+/**
     @Override
     public ForgeDirection[] getValidRotations(World world, int x, int y, int z) {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
@@ -523,5 +524,5 @@ public class InfusedBlock extends Block {
             if (obj != null) return (Boolean) obj;
         }
         return false;
-    }
+    }**/
 }
