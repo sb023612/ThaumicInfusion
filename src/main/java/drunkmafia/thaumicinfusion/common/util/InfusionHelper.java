@@ -2,7 +2,10 @@ package drunkmafia.thaumicinfusion.common.util;
 
 import drunkmafia.thaumicinfusion.common.CommonProxy;
 import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
+import drunkmafia.thaumicinfusion.common.block.BlockHandler;
+import drunkmafia.thaumicinfusion.common.block.InfusedBlock;
 import drunkmafia.thaumicinfusion.common.block.TIBlocks;
+import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,19 +18,13 @@ import java.util.ArrayList;
 public class InfusionHelper {
 
     public static int getBlockID(Class[] aspects){
-        int defBlock = Block.getIdFromBlock(TIBlocks.infusedBlock);
-        try {
-            for (Class c : aspects) {
-                Method meth = c.getMethod("getBlock", new Class[]{});
-                if(meth != null){
-                    int id = Block.getIdFromBlock((Block) meth.invoke(c.newInstance()));
-                    if (id != defBlock) {
-                        return id;
-                    }
-                }
+        int defBlock = Block.getIdFromBlock(BlockHandler.getBlock("default"));
+        for(Class aspect : aspects){
+            if(aspect.isAnnotationPresent(Effect.class)) {
+                Effect annotation = (Effect) aspect.getAnnotation(Effect.class);
+                int effectBlock = Block.getIdFromBlock(BlockHandler.getBlock(annotation.infusedBlock()));
+                if(defBlock != effectBlock) return effectBlock;
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
         return defBlock;
     }

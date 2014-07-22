@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
@@ -97,6 +98,24 @@ public class EssentiaBlock extends Block {
     }
 
     @Override
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
+        BlockSavable data = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
+        if(data != null) {
+            int meta = world.getBlockMetadata(x, y, z);
+            ItemStack stack = new ItemStack(this, 1, meta);
+            NBTTagCompound tagCompound = new NBTTagCompound();
+
+            Aspect aspect = ((EssentiaData) data).getAspect();
+            tagCompound.setString("aspectTag", aspect.getTag());
+            stack.setTagCompound(tagCompound);
+            stack.setStackDisplayName(aspect.getName() + (meta != 0 ? (meta == 1 ? " Brick" : " chiseled") : ""));
+
+            return stack;
+        }
+        return null;
+    }
+
+    @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
         if(!world.isRemote){
             BlockSavable data = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
@@ -106,8 +125,10 @@ public class EssentiaBlock extends Block {
 
                 ItemStack stack = new ItemStack(this, 1, meta);
                 NBTTagCompound tagCompound = new NBTTagCompound();
-                tagCompound.setString("aspectTag", ((EssentiaData) data).getAspect().getTag());
+                Aspect aspect = ((EssentiaData) data).getAspect();
+                tagCompound.setString("aspectTag", aspect.getTag());
                 stack.setTagCompound(tagCompound);
+                stack.setStackDisplayName(aspect.getName() + (meta != 0 ? (meta == 1 ? " Brick" : " chiseled") : ""));
                 super.dropBlockAsItem(world, x, y, z, stack);
             }
         }

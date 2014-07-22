@@ -4,10 +4,10 @@ public class ModInfo {
 
     /* Base Mod Info */
 
-    public static final String MODID_INFO = "thaumicinfusion";
-    public static final String NAME_INFO = "Thaumic Infusion";
-    public static final String VERSION_INFO = "0.01 Pre-Alpha";
-    public static final String CHANNEL = MODID_INFO.toUpperCase();
+    public static final String MODID = "thaumicinfusion";
+    public static final String NAME = "Thaumic Infusion";
+    public static final String VERSION = "0.01 Pre-Alpha";
+    public static final String CHANNEL = MODID.toUpperCase();
 
     /* Classpaths */
 

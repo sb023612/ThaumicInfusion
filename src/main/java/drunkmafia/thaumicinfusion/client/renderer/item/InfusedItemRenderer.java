@@ -1,9 +1,11 @@
 package drunkmafia.thaumicinfusion.client.renderer.item;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.IItemRenderer;
@@ -25,24 +27,18 @@ public class InfusedItemRenderer implements IItemRenderer {
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         NBTTagCompound tag = item.stackTagCompound;
         if (tag != null) {
+
+            ItemStack jar = new ItemStack(Block.getBlockById(tag.getInteger("infusedID")), tag.getInteger("infusedMETA"));
+            jar.stackSize = 1;
+            EntityItem entityitem = new EntityItem(FMLClientHandler.instance().getClient().theWorld, 0.0D, 0.0D, 0.0D, jar);
+            entityitem.hoverStart = 0.0F;
+
             GL11.glPushMatrix();
 
-            switch (type) {
-                case ENTITY:
-                    GL11.glScalef(0.5F, 0.5F, 0.5F);
-                    GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-                    break;
-                default:
-                    GL11.glScalef(1F, 1F, 1F);
-                    GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-            }
-            GL11.glRotatef(180, 1, 0, 0);
-            TextureManager textMan = Minecraft.getMinecraft().getTextureManager();
-            textMan.bindTexture(textMan.getResourceLocation(0));
-            ItemStack stack = new ItemStack(Block.getBlockFromName(tag.getString("block")));
-            if (stack != null) {
-                RenderManager.instance.itemRenderer.renderItem(null, stack, 10);
-            }
+            GL11.glScalef(1.6F, 1.6F, 1.6F);
+
+            RenderManager.instance.renderEntityWithPosYaw(entityitem, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+
             GL11.glPopMatrix();
 
         }

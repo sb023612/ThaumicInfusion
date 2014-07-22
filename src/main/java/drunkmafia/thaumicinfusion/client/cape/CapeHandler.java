@@ -49,6 +49,6 @@ public class CapeHandler {
     }
 
     private static void registerCape(String username, String URL){
-        Minecraft.getMinecraft().renderEngine.loadTexture(new ResourceLocation("cloaks/" + username), new ThreadDownloadImageData(URL, null, new ImageBufferDownload()));
+        Minecraft.getMinecraft().renderEngine.loadTexture(new ResourceLocation("cloaks/" + username), new ThreadDownloadImageData(null, URL, null, new ImageBufferDownload()));
     }
 }

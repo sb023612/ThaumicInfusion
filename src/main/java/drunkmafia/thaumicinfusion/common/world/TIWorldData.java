@@ -1,6 +1,7 @@
 package drunkmafia.thaumicinfusion.common.world;
 
 import drunkmafia.thaumicinfusion.common.util.BlockSavable;
+import drunkmafia.thaumicinfusion.common.util.Savable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -20,14 +21,14 @@ public class TIWorldData extends WorldSavedData {
 
     private HashMap<ChunkCoordinates, BlockSavable> blocksData;
 
-    public TIWorldData(String mapname){
+    public TIWorldData(String mapname) {
         super(mapname);
         blocksData = new HashMap<ChunkCoordinates, BlockSavable>();
         setDirty(true);
     }
 
-    public boolean addBlock(BlockSavable block){
-        if(block != null && block.getCoords() != null){
+    public boolean addBlock(BlockSavable block) {
+        if (block != null && block.getCoords() != null) {
             blocksData.put(block.getCoords(), block);
             setDirty(true);
             return true;
@@ -35,42 +36,37 @@ public class TIWorldData extends WorldSavedData {
         return false;
     }
 
-    public void removeBlock(ChunkCoordinates coords){
+    public void removeBlock(ChunkCoordinates coords) {
         blocksData.remove(coords);
         setDirty(true);
     }
 
-    public BlockSavable getBlock(ChunkCoordinates coords){
+    public BlockSavable getBlock(ChunkCoordinates coords) {
         return blocksData.get(coords);
     }
 
-    public ArrayList<BlockSavable> getBlocksInChunk(Chunk chunk){
+    public ArrayList<BlockSavable> getBlocksInChunk(Chunk chunk) {
         World world = chunk.worldObj;
         Object[] blocks = blocksData.entrySet().toArray();
         ArrayList<BlockSavable> data = new ArrayList<BlockSavable>();
-        for(Object obj : blocks){
-            BlockSavable block = (BlockSavable)((Map.Entry) obj).getValue();
-            if(world.getChunkFromBlockCoords(block.getCoords().posX, block.getCoords().posZ).isAtLocation(chunk.xPosition, chunk.zPosition))
+        for (Object obj : blocks) {
+            BlockSavable block = (BlockSavable) ((Map.Entry) obj).getValue();
+            if (world.getChunkFromBlockCoords(block.getCoords().posX, block.getCoords().posZ).isAtLocation(chunk.xPosition, chunk.zPosition))
                 data.add(block);
         }
         return data;
     }
 
-    public int getNoOfBlocks(){
-        int amount = 0;
+    public int getNoOfBlocks() {
         Object[] ents = blocksData.entrySet().toArray();
-        for(Object obj : ents){
-            Map.Entry ent = (Map.Entry) obj;
-            amount += ((HashMap)ent.getValue()).size();
-        }
-        return amount;
+        return ents.length;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
-        for(int i = 0; i < tag.getInteger("Size"); i++){
-            BlockSavable data = BlockSavable.loadDataFromNBT(tag.getCompoundTag("Tag: " + i));
-            if(data != null)
+        for (int i = 0; i < tag.getInteger("Size"); i++) {
+            BlockSavable data = (BlockSavable) Savable.loadDataFromNBT(tag.getCompoundTag("Tag: " + i));
+            if (data != null)
                 blocksData.put(data.getCoords(), data);
         }
     }
@@ -79,7 +75,7 @@ public class TIWorldData extends WorldSavedData {
     public void writeToNBT(NBTTagCompound tag) {
         Object[] objs = blocksData.entrySet().toArray();
         tag.setInteger("Size", objs.length);
-        for(int i = 0; i < objs.length; i++){
+        for (int i = 0; i < objs.length; i++) {
             NBTTagCompound dataTag = new NBTTagCompound();
             blocksData.get(((Map.Entry) objs[i]).getKey()).writeNBT(dataTag);
             tag.setTag("Tag: " + i, dataTag);

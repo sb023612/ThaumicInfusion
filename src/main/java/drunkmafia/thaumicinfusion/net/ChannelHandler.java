@@ -25,6 +25,7 @@ public class ChannelHandler{
         //Server Handled Packets
         network.registerMessage(RequestChunkPacketS.Handler.class, RequestChunkPacketS.class, 0, Side.SERVER);
         network.registerMessage(RequestBlockPacketS.Handler.class, RequestBlockPacketS.class, 1, Side.SERVER);
+        network.registerMessage(SyncTilePacketC.Handler.class, SyncTilePacketC.class, 2, Side.SERVER);
 
         //Client Handled Packets
         network.registerMessage(BlockDestroyedPacketC.Handler.class, BlockDestroyedPacketC.class, 2, Side.CLIENT);
