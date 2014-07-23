@@ -20,7 +20,7 @@ public class Slider {
     protected InfusedBlockGUI gui;
     private ResourceLocation slider = new ResourceLocation(ModInfo.MODID, "textures/gui/Slider.png");
     private int guiLeft, guiTop, posX, posY, sliderX, xSize = 118, ySize = 12, frame, maxFrames = 5;
-    private float cooldown, timeFrame = 2, incrementing = 0.4F;
+    private float cooldown, timeFrame = 2, incrementing = 0.5F;
 
     private ArrayList<SliderSection> section = new ArrayList<SliderSection>();
 
@@ -32,6 +32,7 @@ public class Slider {
         guiTop = gui.getTop();
 
         sliderX = posX + (118 / 2);
+        sections = new ArrayList<ArrayList<Aspect>>();
         ArrayList<Aspect> aspects1 = new ArrayList<Aspect>();
         aspects1.add(Aspect.MOTION);
         ArrayList<Aspect> aspects2 = new ArrayList<Aspect>();
@@ -44,19 +45,20 @@ public class Slider {
 
             int sectionSizeX = xSize;
             if(sections.size() > 1) sectionSizeX = xSize / sections.size();
-            int sectionPosX = 0;
-            if(i > 0) sectionPosX = xSize * i;
+            int sectionPosX = posX;
+            if(i > 0) sectionPosX += sectionSizeX * i;
 
-            section.add(new SliderSection(this, aspect, sectionPosX, posY, sectionSizeX * i, sectionSizeX, 6));
+            section.add(new SliderSection(this, aspect, sectionPosX, posY + 3, sectionSizeX * i, sectionSizeX, 6));
         }
     }
 
     public void drawGuiContainerBackgroundLayer(float tpf, int mouseX, int mouseY) {
         gui.drawTexturedModalRect(posX, posY, 0, 107, xSize, ySize);
 
-        gui.drawTexturedModalRect(sliderX, posY, 122, 107, 14, 14);
-
         for(SliderSection aspect : section) aspect.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
+
+        GL11.glColor4f(1F, 1F, 1F, 1F);
+        gui.drawTexturedModalRect(sliderX, posY, 122, 107, 14, 14);
     }
 
     protected void drawGuiContainerForegroundLayer(int mouseY, int mouseX) {
@@ -82,14 +84,12 @@ public class Slider {
             this.u = u;
             this.xSize = xSize;
             this.ySize = ySize;
-            rgb = new RGB(Aspect.FIRE.getColor());
+            rgb = new RGB(aspects.get(0).getColor());
         }
 
         public void drawGuiContainerBackgroundLayer(float tpf, int mouseX, int mouseY) {
-            if(cooldown > timeFrame){
-                frame++;
-                if(frame >= maxFrames) frame = 1;
-            }else cooldown += incrementing * tpf;
+            frame++;
+            if(frame >= maxFrames) frame = 1;
 
             GL11.glColor3f(rgb.getR(), rgb.getG(), rgb.getB());
 

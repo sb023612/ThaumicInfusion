@@ -2,11 +2,14 @@ package drunkmafia.thaumicinfusion.common.util;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
 import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
+import drunkmafia.thaumicinfusion.common.block.BlockHandler;
+import drunkmafia.thaumicinfusion.common.util.annotation.BlockSubscribe;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import thaumcraft.api.aspects.Aspect;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,20 +39,30 @@ public class BlockData extends BlockSavable {
         return effects;
     }
 
-    public Object runMethod(boolean shouldBlockRun, String methName, Object... pars) {
+    private Class[] objsToClass(Object... pas){
+        Class[] classes = new Class[pas.length];
+        for(int i = 0; i < classes.length; i++){
+            classes[i] = pas[i].getClass();
+        }
+        return classes;
+    }
+
+    public String getCallerMethod(){
+        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+        StackTraceElement e = stacktrace[3];
+        return e.getMethodName();
+    }
+
+    public Object runMethod(boolean shouldBlockRun, Object... pars) {
+        String methName = getCallerMethod();
         try {
             for(Savable savable : dataEffects){
-                MethodAccess blockAccess = MethodAccess.get(savable.getClass());
-                if(Arrays.asList(blockAccess.getMethodNames()).contains(methName)) return blockAccess.invoke(savable, methName, pars);
+                Method method = savable.getClass().getDeclaredMethod(methName, objsToClass(pars));
+                if(method.isAnnotationPresent(BlockSubscribe.class)) return method.invoke(savable, pars);
             }
             if(shouldBlockRun) {
-                MethodAccess blockAccess = MethodAccess.get(getContainingBlock().getClass());
-                if(Arrays.asList(blockAccess.getMethodNames()).contains(methName))
-                    return blockAccess.invoke(getContainingBlock(), methName, pars);
-                else{
-                    blockAccess = MethodAccess.get(Block.class);
-                    if(Arrays.asList(blockAccess.getMethodNames()).contains(methName)) blockAccess.invoke(getContainingBlock(), methName, pars);
-                }
+                Method method = Block.class.getDeclaredMethod(methName, objsToClass(pars));
+                if(method != null) return method.invoke(getContainingBlock(), pars);
             }
         }catch (Exception e){System.out.println("Failed: " + methName);}
         return null;

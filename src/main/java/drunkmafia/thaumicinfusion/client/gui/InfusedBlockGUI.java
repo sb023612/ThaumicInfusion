@@ -37,7 +37,12 @@ public class InfusedBlockGUI extends GuiContainer {
 
         world = FMLClientHandler.instance().getClient().theWorld;
         data = (BlockData) BlockHelper.getData(world, coordinates);
-        slider = new Slider(this, guiLeft + (xSize / 2), guiTop + ySize + 10, data.getAspects());
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        slider = new Slider(this, (guiLeft + (xSize / 2)) - 118, guiTop + ySize + 10, data.getAspects());
     }
 
     @Override

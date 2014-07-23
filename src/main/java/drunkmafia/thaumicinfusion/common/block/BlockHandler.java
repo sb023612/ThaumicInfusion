@@ -16,18 +16,10 @@ import java.util.HashMap;
 public class BlockHandler {
 
     private static HashMap<String, InfusedBlock> infusedBlocks = new HashMap<String, InfusedBlock>();
-    //Contains methods which are banned from being ran straight from the block class. Prevents infinite loops from occurring
-    private static ArrayList<Method> blackListedMethods = new ArrayList<Method>();
+    private static HashMap<Object[], Method> blockMethods = new HashMap<Object[], Method>();
 
     public static void addBlock(String key, InfusedBlock block){
         infusedBlocks.put(key, block);
-    }
-
-    public static void addMethod(Method meth) {
-        if (meth != null && !blackListedMethods.contains(meth)) {
-            FMLLog.info("Method: " + meth.getName() + " has been added to the black list");
-            blackListedMethods.add(meth);
-        }
     }
 
     public static InfusedBlock getBlock(String key){
@@ -41,11 +33,18 @@ public class BlockHandler {
         return null;
     }
 
-    public static void init() {
-        addMethod(getMethod("getLightValue", new Class[]{IBlockAccess.class, Integer.class, Integer.class, Integer.class}));
+    public static void phaseBlock(){
+        Method[] methods = Block.class.getDeclaredMethods();
+        for(Method meth : methods)
+            blockMethods.put(new Object[] {meth.getName(), meth.getParameterTypes().length}, meth);
+        System.out.println("Phased though block class, methods found: " + methods.length);
     }
 
-    public static boolean isMethodSafe(Method method) {
-        return !blackListedMethods.contains(method);
+    public static Method getMethod(String methName, int pars){
+        return blockMethods.get(new Object[] {methName, pars});
+    }
+
+    public static void init() {
+        phaseBlock();
     }
 }
