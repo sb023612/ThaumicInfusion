@@ -28,14 +28,13 @@ public class InfusedItemRenderer implements IItemRenderer {
         NBTTagCompound tag = item.stackTagCompound;
         if (tag != null) {
 
-            ItemStack jar = new ItemStack(Block.getBlockById(tag.getInteger("infusedID")), tag.getInteger("infusedMETA"));
-            jar.stackSize = 1;
-            EntityItem entityitem = new EntityItem(FMLClientHandler.instance().getClient().theWorld, 0.0D, 0.0D, 0.0D, jar);
+            ItemStack infused = new ItemStack(Block.getBlockById(tag.getInteger("infusedID")), 1, item.getItemDamage());
+            EntityItem entityitem = new EntityItem(FMLClientHandler.instance().getClient().theWorld, 0.0D, 0.0D, 0.0D, infused);
             entityitem.hoverStart = 0.0F;
 
             GL11.glPushMatrix();
 
-            GL11.glScalef(1.6F, 1.6F, 1.6F);
+            GL11.glScalef(4F, 4F, 4F);
 
             RenderManager.instance.renderEntityWithPosYaw(entityitem, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
 
