@@ -12,10 +12,13 @@ public class ModInfo {
     /* Classpaths */
 
     public static final String BASE_PATH = "drunkmafia.thaumicinfusion";
+
     public static final String CLIENT_PATH = BASE_PATH + ".client";
     public static final String CLIENT_PROXY_PATH = CLIENT_PATH + ".ClientProxy";
+
     public static final String COMMON_PATH = BASE_PATH + ".common";
     public static final String COMMON_PROXY_PATH = COMMON_PATH + ".CommonProxy";
+    public static final String COMMON_EFFET_PATH = COMMON_PATH + ".aspect.effect";
 
     /* JAVA Error Messages */
 

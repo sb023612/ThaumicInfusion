@@ -10,7 +10,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import drunkmafia.thaumicinfusion.common.aspect.effect.TIEffects;
+import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
 import drunkmafia.thaumicinfusion.common.commands.InfusedInWorldCommand;
 import drunkmafia.thaumicinfusion.common.commands.SpawnInfusedBlockCommand;
 import drunkmafia.thaumicinfusion.common.tab.TITab;
@@ -34,19 +34,15 @@ public class ThaumicInfusion {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         TITab.init();
-        TIEffects.init();
+        AspectHandler.registerPackage(COMMON_EFFET_PATH);
         proxy.preInit(event);
-
-        debug = new DebugItem();
-
-        GameRegistry.registerItem(debug, "debug");
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
         ChannelHandler.init();
-        proxy.init(event);
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+        proxy.init(event);
     }
 
     @EventHandler

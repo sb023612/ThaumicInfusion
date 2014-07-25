@@ -1,11 +1,9 @@
 package drunkmafia.thaumicinfusion.common.block;
 
-import cpw.mods.fml.common.FMLLog;
+import com.esotericsoftware.reflectasm.MethodAccess;
 import net.minecraft.block.Block;
-import net.minecraft.world.IBlockAccess;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -16,7 +14,7 @@ import java.util.HashMap;
 public class BlockHandler {
 
     private static HashMap<String, InfusedBlock> infusedBlocks = new HashMap<String, InfusedBlock>();
-    private static HashMap<Object[], Method> blockMethods = new HashMap<Object[], Method>();
+    private static HashMap<String, Integer> blockMethods = new HashMap<String, Integer>();
 
     public static void addBlock(String key, InfusedBlock block){
         infusedBlocks.put(key, block);
@@ -34,14 +32,15 @@ public class BlockHandler {
     }
 
     public static void phaseBlock(){
-        Method[] methods = Block.class.getDeclaredMethods();
-        for(Method meth : methods)
-            blockMethods.put(new Object[] {meth.getName(), meth.getParameterTypes().length}, meth);
-        System.out.println("Phased though block class, methods found: " + methods.length);
+        MethodAccess methodAccess = MethodAccess.get(Block.class);
+        String[] methods = methodAccess.getMethodNames();
+        for(String name : methods){
+            blockMethods.put(name, methodAccess.getIndex(name));
+        }
     }
 
-    public static Method getMethod(String methName, int pars){
-        return blockMethods.get(new Object[] {methName, pars});
+    public static int getMethod(String methName){
+        return blockMethods.get(methName);
     }
 
     public static void init() {

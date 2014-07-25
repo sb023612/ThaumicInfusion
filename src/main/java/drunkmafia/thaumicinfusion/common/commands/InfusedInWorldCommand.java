@@ -1,19 +1,11 @@
 package drunkmafia.thaumicinfusion.common.commands;
 
 import drunkmafia.thaumicinfusion.common.util.BlockHelper;
-import drunkmafia.thaumicinfusion.common.util.InfusionHelper;
-import drunkmafia.thaumicinfusion.common.util.ReflectionHelper;
 import drunkmafia.thaumicinfusion.common.world.TIWorldData;
-import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
-import thaumcraft.api.aspects.Aspect;
-
-import java.util.ArrayList;
 
 /**
  * Created by DrunkMafia on 21/06/2014.
