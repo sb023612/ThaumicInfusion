@@ -1,5 +1,7 @@
 package drunkmafia.thaumicinfusion.common.util;
 
+import java.util.Random;
+
 /**
  * Created by DrunkMafia on 19/07/2014.
  * <p/>
@@ -8,6 +10,13 @@ package drunkmafia.thaumicinfusion.common.util;
 public class RGB {
 
     private float r, g, b;
+
+    public RGB(){
+        Random rand = new Random();
+        r = rand.nextFloat();
+        g = rand.nextFloat();
+        b = rand.nextFloat();
+    }
 
     public RGB(float r, float g, float b){
         this.r = r;

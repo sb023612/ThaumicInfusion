@@ -1,11 +1,14 @@
 package drunkmafia.thaumicinfusion.client.gui;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
 import drunkmafia.thaumicinfusion.common.container.InfusedBlockContainer;
 import drunkmafia.thaumicinfusion.common.lib.ModInfo;
 import drunkmafia.thaumicinfusion.common.util.BlockData;
 import drunkmafia.thaumicinfusion.common.util.BlockHelper;
+import drunkmafia.thaumicinfusion.common.util.EffectGUI;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -16,6 +19,9 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
+import thaumcraft.api.aspects.Aspect;
+
+import java.util.ArrayList;
 
 /**
  * Created by DrunkMafia on 12/07/2014.
@@ -29,6 +35,8 @@ public class InfusedBlockGUI extends GuiContainer {
     private ResourceLocation gui = new ResourceLocation(ModInfo.MODID, "textures/gui/InfusedGUI.png");
     private Slider slider;
 
+    private EffectGUI currentEffect;
+
     public InfusedBlockGUI(ChunkCoordinates coordinates) {
         super(new InfusedBlockContainer());
 
@@ -39,10 +47,28 @@ public class InfusedBlockGUI extends GuiContainer {
         data = (BlockData) BlockHelper.getData(world, coordinates);
     }
 
+    public void setupEffect(ArrayList<Aspect> aspects){
+        if(aspects != null){
+            Class effect = AspectHandler.getEffectFromList(slider.getSelectedEffect());
+            if(effect != null){
+                currentEffect = AspectHandler.getEffectGUI(effect);
+                if(currentEffect != null) {
+                    currentEffect.fontRendererObj = fontRendererObj;
+
+                    currentEffect.guiTop = (this.height - this.ySize) / 2 + 20;
+                    currentEffect.guiLeft = (this.width - this.xSize) / 2 + 20;
+
+                    currentEffect.initGui();
+                }
+            }
+        }
+    }
+
     @Override
     public void initGui() {
         super.initGui();
-        slider = new Slider(this, (guiLeft + (xSize / 2)) - 118, guiTop + ySize + 10, data.getAspects());
+        slider = new Slider(this, (guiLeft + (xSize / 2)) - (118 / 2), guiTop + ySize + 10, data.getAspects());
+        setupEffect(slider.getSelectedEffect());
     }
 
     @Override
@@ -51,6 +77,8 @@ public class InfusedBlockGUI extends GuiContainer {
             Minecraft.getMinecraft().renderEngine.bindTexture(gui);
             drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 
+            if(currentEffect != null) currentEffect.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
+
             slider.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
         }
     }
@@ -58,46 +86,35 @@ public class InfusedBlockGUI extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         if(data != null){
+            if(currentEffect != null) currentEffect.drawGuiContainerForegroundLayer(mouseX, mouseY);
+
             slider.drawGuiContainerForegroundLayer(mouseX, mouseY);
         }
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int lastButtonClicked) {
+        super.mouseClicked(mouseX, mouseY, lastButtonClicked);
+        slider.mouseClicked(mouseX, mouseY, lastButtonClicked);
+        setupEffect(slider.getSelectedEffect());
     }
 
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int lastButtonClicked, long timeSinceMouseClick) {
         super.mouseClickMove(mouseX, mouseY, lastButtonClicked, timeSinceMouseClick);
         slider.mouseClickMove(mouseX, mouseY, lastButtonClicked, timeSinceMouseClick);
+        setupEffect(slider.getSelectedEffect());
     }
 
-    public int getLeft(){
+    protected int getLeft(){
         return guiLeft;
     }
 
-    public int getTop(){
+    protected int getTop(){
         return guiTop;
     }
 
-    private float rotationY, speedRot = 0.5F;
-
-    public void renderBlock(float tpf, int mouseX, int mouseY){
-        ItemStack block = new ItemStack(data.getContainingBlock(), world.getBlockMetadata(data.getCoords().posX, data.getCoords().posY, data.getCoords().posZ));
-        block.stackSize = 1;
-        EntityItem entityitem = new EntityItem(world, 0.0D, 0.0D, 0.0D, block);
-        entityitem.hoverStart = 0.0F;
-
-        rotationY += speedRot * tpf;
-
-        GL11.glPushMatrix();
-        GL11.glColor4f(0F, 0F, 0F, 0.3F);
-        GL11.glTranslatef(guiLeft + (xSize / 2), guiTop + (ySize / 2), 100);
-        float scale = xSize;
-        GL11.glScalef(-scale, scale, scale);
-
-        GL11.glRotatef(rotationY, 0, 1, 0);
-
-        RenderManager.instance.renderEntityWithPosYaw(entityitem, 0, 0, 0, 0, 0);
-
-        RenderHelper.disableStandardItemLighting();
-
-        GL11.glPopMatrix();
+    protected FontRenderer getFontRenderer(){
+        return fontRendererObj;
     }
 }

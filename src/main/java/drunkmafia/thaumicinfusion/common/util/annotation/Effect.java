@@ -19,6 +19,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Effect {
+
+    /**
+     * Used to find localized strings for the names & descriptions
+     */
+    String name();
+
     /**
      * Separate Aspects by using Comma (,)
      */

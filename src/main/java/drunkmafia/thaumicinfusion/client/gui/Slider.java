@@ -1,14 +1,18 @@
 package drunkmafia.thaumicinfusion.client.gui;
 
+import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
 import drunkmafia.thaumicinfusion.common.block.InfusedBlock;
 import drunkmafia.thaumicinfusion.common.lib.ModInfo;
 import drunkmafia.thaumicinfusion.common.util.RGB;
+import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 import thaumcraft.api.aspects.Aspect;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by DrunkMafia on 22/07/2014.
@@ -18,63 +22,78 @@ import java.util.ArrayList;
 public class Slider {
 
     protected InfusedBlockGUI gui;
-    private ResourceLocation slider = new ResourceLocation(ModInfo.MODID, "textures/gui/Slider.png");
-    private int guiLeft, guiTop, posX, posY, sliderX, xSize = 118, ySize = 12, frame, maxFrames = 5;
-    private float cooldown, timeFrame = 2, incrementing = 0.5F;
+    private int posX, posY, sliderX;
+    private int xSize = 118;
+    private int frame;
 
-    private ArrayList<SliderSection> section = new ArrayList<SliderSection>();
+    private boolean shouldDraw;
 
-    public Slider(InfusedBlockGUI gui, int posX, int posY, ArrayList<ArrayList<Aspect>> sections){
+    private ArrayList<SliderSection> sections = new ArrayList<SliderSection>();
+
+    public Slider(InfusedBlockGUI gui, int posX, int posY, ArrayList<ArrayList<Aspect>> aspects){
         this.gui = gui;
         this.posX = posX;
         this.posY = posY;
-        guiLeft = gui.getLeft();
-        guiTop = gui.getTop();
+
+        this.shouldDraw = aspects.size() > 0 ;
 
         sliderX = posX + (118 / 2);
-        sections = new ArrayList<ArrayList<Aspect>>();
-        ArrayList<Aspect> aspects1 = new ArrayList<Aspect>();
-        aspects1.add(Aspect.MOTION);
-        ArrayList<Aspect> aspects2 = new ArrayList<Aspect>();
-        aspects2.add(Aspect.DARKNESS);
-        sections.add(aspects1);
-        sections.add(aspects2);
 
-        for(int i = 0; i < sections.size(); i++){
-            ArrayList<Aspect> aspect = sections.get(i);
+        for(int i = 0; i < aspects.size(); i++){
+            ArrayList<Aspect> aspect = aspects.get(i);
 
             int sectionSizeX = xSize;
-            if(sections.size() > 1) sectionSizeX = xSize / sections.size();
-            int sectionPosX = posX;
+            if(aspects.size() > 1) sectionSizeX = xSize / aspects.size();
+            int sectionPosX = posX + 4;
             if(i > 0) sectionPosX += sectionSizeX * i;
 
-            section.add(new SliderSection(this, aspect, sectionPosX, posY + 3, sectionSizeX * i, sectionSizeX, 6));
+            sections.add(new SliderSection(this, aspect, sectionPosX, posY + 3, sectionSizeX * i, sectionSizeX, 6));
         }
     }
 
     public void drawGuiContainerBackgroundLayer(float tpf, int mouseX, int mouseY) {
+        if(!shouldDraw) return;
+        int ySize = 12;
         gui.drawTexturedModalRect(posX, posY, 0, 107, xSize, ySize);
 
-        for(SliderSection aspect : section) aspect.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
+        for(SliderSection aspect : sections) aspect.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
         gui.drawTexturedModalRect(sliderX, posY, 122, 107, 14, 14);
     }
 
-    protected void drawGuiContainerForegroundLayer(int mouseY, int mouseX) {
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        if(!shouldDraw) return;
 
+        for(SliderSection aspect : sections) aspect.drawGuiContainerForegroundLayer(mouseX, mouseY);
+    }
+
+    protected void mouseClicked(int mouseX, int mouseY, int lastButtonClicked) {
+        if(!shouldDraw) return;
+        if(mouseX > posX && mouseX < ((posX + xSize) - 12))
+            sliderX = mouseX;
     }
 
     protected void mouseClickMove(int mouseX, int mouseY, int lastButtonClicked, long timeSinceMouseClick) {
-        sliderX = mouseX;
+        if(!shouldDraw) return;
+        if(mouseX > posX && mouseX < ((posX + xSize) - 12))
+            sliderX = mouseX;
+    }
+
+    public ArrayList<Aspect> getSelectedEffect(){
+        for(SliderSection s : sections)
+            if(s.inRect(sliderX)) return s.aspects;
+        return null;
     }
 
     public class SliderSection {
 
         private Slider slider;
         private ArrayList<Aspect> aspects;
+        private Effect effect;
         private RGB rgb;
         private int posX, posY, u, xSize, ySize;
+        private Tooltip tooltip;
 
         public SliderSection(Slider slider, ArrayList<Aspect> aspects, int posX, int posY, int u, int xSize, int ySize){
             this.slider = slider;
@@ -84,16 +103,65 @@ public class Slider {
             this.u = u;
             this.xSize = xSize;
             this.ySize = ySize;
-            rgb = new RGB(aspects.get(0).getColor());
+
+            this.effect = (Effect) AspectHandler.getEffectFromList(aspects).getAnnotation(Effect.class);
+
+            tooltip = new Tooltip(StatCollector.translateToLocal("effect." + effect.name() + ".name"));
+
+            Random rand = new Random();
+            if(aspects != null)rgb = new RGB(aspects.get(rand.nextInt(aspects.size())).getColor());
+            else rgb = new RGB();
         }
 
         public void drawGuiContainerBackgroundLayer(float tpf, int mouseX, int mouseY) {
             frame++;
+            int maxFrames = 5;
             if(frame >= maxFrames) frame = 1;
 
             GL11.glColor3f(rgb.getR(), rgb.getG(), rgb.getB());
 
             slider.gui.drawTexturedModalRect(posX, posY, u, 122 + (6 * frame), xSize, ySize);
+
+            if(isMouseInRect(mouseX, mouseY))
+                tooltip.drawGuiContainerBackgroundLayer(tpf, mouseX, mouseY);
+
+        }
+
+        protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+            if(isMouseInRect(mouseX, mouseY))
+                tooltip.drawGuiContainerForegroundLayer(mouseX, mouseY);
+        }
+
+        public boolean isMouseInRect(int mouseX, int mouseY){
+            return posX <= mouseX && mouseX <= posX + xSize && posY <= mouseY && mouseY <= posY +  ySize;
+        }
+
+        public boolean inRect(int sliderX){
+            return posX > sliderX || sliderX < (posX + xSize);
+        }
+
+        class Tooltip {
+
+            private String str;
+
+            Tooltip(String str){
+                this.str = str;
+            }
+
+            public void drawGuiContainerBackgroundLayer(float tpf, int mouseX, int mouseY) {
+                int baseX = sliderX - (129 / 2);
+
+                slider.gui.drawTexturedModalRect(baseX, posY + 10, 0, 152, 16, 16);
+                for(int c = 0; c < str.length(); c++){
+                    slider.gui.drawTexturedModalRect(baseX + (c * 8) + 16, posY + 10, 0, 169, 10, 16);
+                    if(c == (str.length() / 2)) slider.gui.drawTexturedModalRect(baseX + ((str.length() / 2) * 8) + 16, posY + 7, 17, 152, 6, 6);
+                    if((c + 1) == str.length()) slider.gui.drawTexturedModalRect(baseX + (str.length() * 8) + 16, posY + 10, 24, 152, 6, 16);
+                }
+            }
+
+            public void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+                gui.getFontRenderer().drawString(str, sliderX - (129 / 2) - gui.getLeft() + 25 , posY - gui.getTop() + 14, 0x404040);
+            }
         }
     }
 }

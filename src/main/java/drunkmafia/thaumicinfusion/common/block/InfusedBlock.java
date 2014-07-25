@@ -8,9 +8,12 @@ import drunkmafia.thaumicinfusion.common.util.BlockData;
 import drunkmafia.thaumicinfusion.common.util.BlockHelper;
 import drunkmafia.thaumicinfusion.common.util.BlockSavable;
 import drunkmafia.thaumicinfusion.net.ChannelHandler;
+import drunkmafia.thaumicinfusion.net.packet.client.RequestBlockPacketS;
 import drunkmafia.thaumicinfusion.net.packet.server.BlockDestroyedPacketC;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
@@ -19,6 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
@@ -58,7 +62,8 @@ public class InfusedBlock extends Block {
             if (data != null) {
                 BlockHelper.getWorldData(world).addBlock(data);
             }
-        }
+            world.setBlockMetadataWithNotify(x, y, z, stack.getItemDamage(), 3);
+        }else RequestBlockPacketS.syncTimeouts.remove(new ChunkCoordinates(x, y, z));
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
         if (isBlockData(blockData)) {
             System.out.println(world.isRemote);
@@ -72,22 +77,63 @@ public class InfusedBlock extends Block {
         if (!world.isRemote && blockData != null) {
             BlockHelper.getWorldData(world).removeBlock(blockData.getCoords());
             ChannelHandler.network.sendToAll(new BlockDestroyedPacketC(blockData.getCoords()));
+        }else RequestBlockPacketS.syncTimeouts.remove(new ChunkCoordinates(x, y, z));
+    }
+
+    @Override
+    public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
+        BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
+        if (isBlockData(blockData))
+            effectRenderer.addBlockDestroyEffects(x, y, z, ((BlockData) blockData).getContainingBlock(), meta);
+        return true;
+    }
+
+    @Override
+    public boolean addHitEffects(World world, MovingObjectPosition target, EffectRenderer effectRenderer) {
+        BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(target.blockX, target.blockY, target.blockZ));
+        if (isBlockData(blockData)){
+            Block block = ((BlockData) blockData).getContainingBlock();
+            if (block.getMaterial() != Material.air){
+                Random rand = new Random();
+
+                float space = 0.1F;
+                double x = (double)target.blockX + rand.nextDouble() * (block.getBlockBoundsMaxX() - block.getBlockBoundsMinX() - (double)(space * 2.0F)) + (double)space + block.getBlockBoundsMinX();
+                double y = (double)target.blockY + rand.nextDouble() * (block.getBlockBoundsMaxY() - block.getBlockBoundsMinY() - (double)(space * 2.0F)) + (double)space + block.getBlockBoundsMinY();
+                double z = (double)target.blockZ + rand.nextDouble() * (block.getBlockBoundsMaxZ() - block.getBlockBoundsMinZ() - (double)(space * 2.0F)) + (double)space + block.getBlockBoundsMinZ();
+
+                if (target.sideHit == 0) y = (double)target.blockY + block.getBlockBoundsMinY() - (double)space;
+                if (target.sideHit == 1) y = (double)target.blockY + block.getBlockBoundsMaxY() + (double)space;
+                if (target.sideHit == 2) z = (double)target.blockZ + block.getBlockBoundsMinZ() - (double)space;
+                if (target.sideHit == 3) z = (double)target.blockZ + block.getBlockBoundsMaxZ() + (double)space;
+                if (target.sideHit == 4) x = (double)target.blockX + block.getBlockBoundsMinX() - (double)space;
+                if (target.sideHit == 5) x = (double)target.blockX + block.getBlockBoundsMaxX() + (double)space;
+
+                effectRenderer.addEffect((new EntityDiggingFX(world, x, y, z, 0.0D, 0.0D, 0.0D, block, world.getBlockMetadata(target.blockX, target.blockY, target.blockZ))).applyColourMultiplier(target.blockX, target.blockY, target.blockZ).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+            }
         }
+        return true;
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        ItemStack stack = player.getHeldItem();
-        if(stack != null && stack.getItem() instanceof ItemWandCasting) {
-            player.openGui(ThaumicInfusion.instance, 0, world, x, y, z);
-        }else{
-            BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
-            if (isBlockData(blockData)) {
+        BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
+        if (isBlockData(blockData)) {
+            ItemStack stack = player.getHeldItem();
+            if(((BlockData) blockData).canOpenGUI() && stack != null && stack.getItem() instanceof ItemWandCasting) {
+                player.openGui(ThaumicInfusion.instance, 0, world, x, y, z);
+            }else{
                 Object obj = ((BlockData) blockData).runMethod(true, world, x, y, z, player, side, hitX, hitY, hitZ);
                 if (obj != null) return (Boolean) obj;
             }
         }
         return false;
+    }
+
+    @Override
+    public void onBlockAdded(World world, int x, int y, int z) {
+        BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
+        if (isBlockData(blockData))
+            ((BlockData) blockData).runMethod(true, world, x, y, z);
     }
 
     @Override
