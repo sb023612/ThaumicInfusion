@@ -1,5 +1,6 @@
 package drunkmafia.thaumicinfusion.common.aspect.effect.vanilla;
 
+import drunkmafia.thaumicinfusion.common.util.EffectGUI;
 import drunkmafia.thaumicinfusion.common.util.Savable;
 import drunkmafia.thaumicinfusion.common.util.annotation.BlockSubscribe;
 import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
@@ -12,7 +13,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
-@Effect(aspects = ("motus,"))
+@Effect(name = "motus", aspects = ("motus,"), gui = Motus.GUI.class)
 public class Motus extends Savable {
 
     private ForgeDirection dir;
@@ -45,6 +46,13 @@ public class Motus extends Savable {
             case WEST:
                 ent.motionZ = -1;
                 break;
+        }
+    }
+
+    public static class GUI extends EffectGUI {
+        @Override
+        public void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+            fontRendererObj.drawString("Hello World", 10, 10, 0x404040);
         }
     }
 }
