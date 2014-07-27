@@ -38,7 +38,8 @@ public class BlockHelper {
 
     public static BlockSavable getData(World world, ChunkCoordinates coords) {
         BlockSavable data = getWorldData(world).getBlock(coords);
-        if (data == null && world.isRemote) ChannelHandler.network.sendToServer(new RequestBlockPacketS(coords));
+        if (data == null && world.isRemote)
+            ChannelHandler.network.sendToServer(new RequestBlockPacketS(coords));
         return data;
     }
 

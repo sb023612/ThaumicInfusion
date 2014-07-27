@@ -1,19 +1,14 @@
 package drunkmafia.thaumicinfusion.common.util;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import drunkmafia.thaumicinfusion.common.aspect.AspectHandler;
 import drunkmafia.thaumicinfusion.common.block.BlockHandler;
-import drunkmafia.thaumicinfusion.common.util.annotation.BlockSubscribe;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import thaumcraft.api.aspects.Aspect;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class BlockData extends BlockSavable {
 
@@ -40,23 +35,27 @@ public class BlockData extends BlockSavable {
 
     private Savable[] classesToEffects(Class[] list) {
         Savable[] effects = new Savable[list.length];
-        for (int i = 0; i < effects.length; i++)
+        for (int i = 0; i < effects.length; i++) {
             try {
                 effects[i] = (Savable) list[i].newInstance();
-            } catch (Exception E) {}
+            }catch (Exception e){}
+        }
         return effects;
     }
 
     public Object runMethod(boolean shouldBlockRun, Object... pars) {
         if(methodAccess == null) methodAccess = MethodAccess.get(Block.class);
-        int index = BlockHandler.getMethod(Thread.currentThread().getStackTrace()[2].getMethodName());
+        String methName = Thread.currentThread().getStackTrace()[2].getMethodName();
+        int blockIndex = BlockHandler.getMethod(methName);
 
         for (int s = 0; s < dataEffects.size(); s++){
-            try {dataAccess.get(s).invoke(dataEffects.get(s), index, pars);}catch (Exception e){}
+            Savable effect = dataEffects.get(s);
+            int effectIndex = AspectHandler.getMethod(effect.getClass(), methName);
+            if(effectIndex != -1) try {return dataAccess.get(s).invoke(effect, effectIndex, pars);}catch (Exception e){}
         }
 
         if(shouldBlockRun) {
-            try {return methodAccess.invoke(getContainingBlock(),index, pars);}catch (Exception e){}
+            try {return methodAccess.invoke(getContainingBlock(),blockIndex, pars);}catch (Exception e){}
         }
         return null;
     }
@@ -104,8 +103,10 @@ public class BlockData extends BlockSavable {
         super.readNBT(tagCompound);
         blockID = tagCompound.getInteger("BlockID");
 
-        for (int i = 0; i < tagCompound.getInteger("length"); i++)
+        for (int i = 0; i < tagCompound.getInteger("length"); i++) {
             dataEffects.add(Savable.loadDataFromNBT(tagCompound.getCompoundTag("effect: " + i)));
+            dataAccess.add(MethodAccess.get(dataEffects.get(i).getClass()));
+        }
 
         containingID = tagCompound.getInteger("ContainingID");
     }

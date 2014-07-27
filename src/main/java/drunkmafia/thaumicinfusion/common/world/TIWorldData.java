@@ -4,6 +4,7 @@ import drunkmafia.thaumicinfusion.common.util.BlockSavable;
 import drunkmafia.thaumicinfusion.common.util.Savable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.chunk.Chunk;

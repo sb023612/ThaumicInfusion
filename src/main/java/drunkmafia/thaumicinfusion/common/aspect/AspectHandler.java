@@ -1,19 +1,19 @@
 package drunkmafia.thaumicinfusion.common.aspect;
 
+import com.esotericsoftware.reflectasm.MethodAccess;
 import drunkmafia.thaumicinfusion.common.util.EffectGUI;
 import drunkmafia.thaumicinfusion.common.util.Savable;
 import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
 import thaumcraft.api.aspects.Aspect;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
 public class AspectHandler {
 
     private static HashMap<ArrayList<Aspect>, Class> registeredEffects = new HashMap<ArrayList<Aspect>, Class>();
+    private static HashMap<Class, HashMap<String, Integer>> effectMethods = new HashMap<Class,HashMap<String, Integer>>();
 
     /**
      * This will register all effects within a given package
@@ -31,24 +31,36 @@ public class AspectHandler {
         }
     }
 
-    public static void registerEffect(Class effect) {
-        System.out.println("Registering Effect");
-        try {
-            if (effect.isAnnotationPresent(Effect.class) && Savable.class.isAssignableFrom(effect)) {
-                Effect annotation = (Effect) effect.getAnnotation(Effect.class);
-                ArrayList<Aspect> aspects = phaseStringForAspects(annotation.aspects());
-                if (!registeredEffects.containsKey(aspects) && !registeredEffects.containsValue(effect)) {
-                    System.out.println(annotation.name() + " Registered");
-                    registeredEffects.put(aspects, effect);
-                }
+    public static void registerEffect(Class effect) throws Exception {
+        if (effect.isAnnotationPresent(Effect.class) && Savable.class.isAssignableFrom(effect)) {
+            Effect annotation = (Effect) effect.getAnnotation(Effect.class);
+            ArrayList<Aspect> aspects = phaseStringForAspects(annotation.aspects());
+            if (!registeredEffects.containsKey(aspects) && !registeredEffects.containsValue(effect)) {
+                registeredEffects.put(aspects, effect);
+                phaseEffect(effect);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public static boolean isAspectAnEffect(Aspect aspect){
-        return registeredEffects.containsKey(aspect);
+    private static void phaseEffect(Class effect){
+        MethodAccess methodAccess = MethodAccess.get(effect);
+        String[] methods = methodAccess.getMethodNames();
+
+        HashMap<String, Integer> effectsMeth = new HashMap<String, Integer>();
+        for(String name : methods) {
+            effectsMeth.put(name, methodAccess.getIndex(name));
+        }
+        effectMethods.put(effect, effectsMeth);
+    }
+
+    public static int getMethod(Class effect, String name){
+        if(effectMethods.get(effect).containsKey(name))
+            return effectMethods.get(effect).get(name);
+        return -1;
+    }
+
+    public static boolean isAspectAnEffect(ArrayList<Aspect> aspects){
+        return registeredEffects.containsKey(aspects);
     }
 
     public static ArrayList<Aspect> phaseStringForAspects(String str) {
@@ -93,7 +105,6 @@ public class AspectHandler {
                 }
             }
         }
-        System.out.println("Failed");
         return null;
     }
 

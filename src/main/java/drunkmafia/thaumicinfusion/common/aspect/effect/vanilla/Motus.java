@@ -2,7 +2,6 @@ package drunkmafia.thaumicinfusion.common.aspect.effect.vanilla;
 
 import drunkmafia.thaumicinfusion.common.util.EffectGUI;
 import drunkmafia.thaumicinfusion.common.util.Savable;
-import drunkmafia.thaumicinfusion.common.util.annotation.BlockSubscribe;
 import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -22,12 +21,10 @@ public class Motus extends Savable {
         dir = ForgeDirection.EAST;
     }
 
-    @BlockSubscribe
     public void onEntityWalking(World world, int x, int y, int z, Entity ent) {
         moveEntity(ent);
     }
 
-    @BlockSubscribe
     public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity ent) {
         moveEntity(ent);
     }

@@ -14,7 +14,6 @@ public class CommonProxy implements IGuiHandler {
 
     public void preInit(FMLPreInitializationEvent event) {
         System.out.println("PreInit " + event.getSide().name());
-        ThaumicInfusion.isServer = event.getSide().isServer();
         initBlocks();
     }
 

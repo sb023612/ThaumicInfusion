@@ -1,5 +1,6 @@
 package drunkmafia.thaumicinfusion.common.block;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import drunkmafia.thaumicinfusion.common.ThaumicInfusion;
@@ -119,14 +120,19 @@ public class InfusedBlock extends Block {
         BlockSavable blockData = BlockHelper.getData(world, new ChunkCoordinates(x, y, z));
         if (isBlockData(blockData)) {
             ItemStack stack = player.getHeldItem();
-            if(((BlockData) blockData).canOpenGUI() && stack != null && stack.getItem() instanceof ItemWandCasting) {
+            if(stack != null && stack.getItem() instanceof ItemWandCasting && ((BlockData) blockData).canOpenGUI())
                 player.openGui(ThaumicInfusion.instance, 0, world, x, y, z);
-            }else{
+            else{
                 Object obj = ((BlockData) blockData).runMethod(true, world, x, y, z, player, side, hitX, hitY, hitZ);
                 if (obj != null) return (Boolean) obj;
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean canProvidePower() {
+        return true;
     }
 
     @Override
@@ -343,8 +349,9 @@ public class InfusedBlock extends Block {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockAccess access, int x, int y, int z, int side) {
-        BlockSavable blockData = BlockHelper.getData(access, new ChunkCoordinates(x, y, z));
+        BlockSavable blockData = BlockHelper.getData(FMLClientHandler.instance().getClient().theWorld, new ChunkCoordinates(x, y, z));
         if (isBlockData(blockData)) {
             Object obj = ((BlockData) blockData).runMethod(true, access, x, y, z, side);
             if (obj != null) return (Boolean) obj;

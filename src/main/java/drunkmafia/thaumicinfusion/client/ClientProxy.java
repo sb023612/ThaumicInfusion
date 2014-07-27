@@ -25,7 +25,6 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
-        ThaumicInfusion.isServer = event.getSide().isServer();
         initBlocks();
     }
 

@@ -13,6 +13,20 @@ import net.minecraft.world.IBlockAccess;
 public class Potentia  extends Savable {
 
     public int isProvidingWeakPower(IBlockAccess access, int x, int y, int z, int side){
+        System.out.println("isProvidingWeakPower");
         return 15;
+    }
+
+    public int isProvidingStrongPower(IBlockAccess access, int x, int y, int z, int side){
+        System.out.println("isProvidingStrongPower");
+        return 15;
+    }
+
+    public boolean shouldCheckWeakPower(IBlockAccess access, int x, int y, int z, int side) {
+        return true;
+    }
+
+    public boolean canConnectRedstone(IBlockAccess access, int x, int y, int z, int side) {
+        return true;
     }
 }

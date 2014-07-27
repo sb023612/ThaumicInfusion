@@ -33,6 +33,7 @@ public class ThaumicInfusion {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        ThaumicInfusion.isServer = event.getSide().isServer();
         TITab.init();
         AspectHandler.registerPackage(COMMON_EFFET_PATH);
         proxy.preInit(event);
