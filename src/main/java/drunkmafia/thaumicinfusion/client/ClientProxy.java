@@ -39,6 +39,7 @@ public class ClientProxy extends CommonProxy {
 
         ClientRegistry.bindTileEntitySpecialRenderer(JarPedestalTile.class, new JarPedestalRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(InfusionCoreTile.class, new InfusionCoreRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(MixerTile.class, new MixerRenderer());
     }
 
     @Override

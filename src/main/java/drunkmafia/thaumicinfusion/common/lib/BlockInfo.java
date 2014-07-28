@@ -31,4 +31,7 @@ public class BlockInfo {
     public static final String infusionCoreBlock_TileEntity = "tile_infusionCore";
     public static final ResourceLocation infusionCore_Model = new ResourceLocation(ModInfo.MODID, "models/core.obj");
     public static final ResourceLocation infusionCore_Texture = new ResourceLocation(ModInfo.MODID, "textures/models/core.png");
+
+    public static final ResourceLocation mixerBlock_Model = new ResourceLocation(ModInfo.MODID, "models/mixer.obj");
+    public static final ResourceLocation mixerBlock_Texture = new ResourceLocation(ModInfo.MODID, "textures/models/mixer.png");
 }
