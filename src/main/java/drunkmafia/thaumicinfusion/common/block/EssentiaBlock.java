@@ -34,7 +34,7 @@ import static drunkmafia.thaumicinfusion.common.lib.BlockInfo.*;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
-public class EssentiaBlock extends Block {
+public class EssentiaBlock extends TIBlock {
 
     public EssentiaBlock() {
         super(Material.rock);

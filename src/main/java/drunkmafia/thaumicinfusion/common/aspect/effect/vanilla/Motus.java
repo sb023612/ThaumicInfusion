@@ -12,6 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
+@SuppressWarnings("ALL")
 @Effect(name = "motus", aspects = ("motus,"), gui = Motus.GUI.class)
 public class Motus extends Savable {
 

@@ -24,7 +24,7 @@ import static drunkmafia.thaumicinfusion.common.lib.BlockInfo.*;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
-public class JarPedestalBlock extends Block implements ITileEntityProvider {
+public class JarPedestalBlock extends TIBlock implements ITileEntityProvider {
     public JarPedestalBlock(){
         super(Material.rock);
         setCreativeTab(TITab.tab);

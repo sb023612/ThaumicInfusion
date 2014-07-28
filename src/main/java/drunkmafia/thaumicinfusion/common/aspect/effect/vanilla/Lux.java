@@ -9,6 +9,7 @@ import net.minecraft.world.IBlockAccess;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
+@SuppressWarnings("Annotation")
 @Effect(name = "lux", aspects = ("lux,"))
 public class Lux extends Savable {
 

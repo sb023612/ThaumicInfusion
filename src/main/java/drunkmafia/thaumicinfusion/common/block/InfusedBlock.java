@@ -34,7 +34,7 @@ import java.util.Random;
 
 import static drunkmafia.thaumicinfusion.common.lib.BlockInfo.infusedBlock_UnlocalizedName;
 
-public class InfusedBlock extends Block {
+public class InfusedBlock extends TIBlock {
 
     public InfusedBlock() {
         super(Material.rock);

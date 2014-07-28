@@ -2,6 +2,7 @@ package drunkmafia.thaumicinfusion.common.aspect;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
 import drunkmafia.thaumicinfusion.common.util.EffectGUI;
+import drunkmafia.thaumicinfusion.common.util.ReflectionHelper;
 import drunkmafia.thaumicinfusion.common.util.Savable;
 import drunkmafia.thaumicinfusion.common.util.annotation.Effect;
 import thaumcraft.api.aspects.Aspect;
@@ -22,7 +23,7 @@ public class AspectHandler {
      */
     public static void registerPackage(String path){
         try {
-            List<Class> classesInPath = getClasses(path);
+            List<Class> classesInPath = ReflectionHelper.getClasses(path);
             for(Class c : classesInPath){
                 if(c != null) registerEffect(c);
             }
@@ -98,48 +99,11 @@ public class AspectHandler {
             if(annotation.gui() != Object.class && EffectGUI.class.isAssignableFrom(annotation.gui())){
                 try {
                     return (EffectGUI) annotation.gui().newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
         return null;
-    }
-
-    public static List<Class> getClasses(String packageName) throws Exception{
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String path = packageName.replace('.', '/');
-
-        Enumeration<URL> resources = classLoader.getResources(path);
-        List<File> dirs = new ArrayList<File>();
-
-        while (resources.hasMoreElements()){
-            URL resource = resources.nextElement();
-            dirs.add(new File(resource.getFile()));
-        }
-
-        List<Class> classes = new ArrayList<Class>();
-        for (File directory : dirs)
-            classes.addAll(findClasses(directory, packageName));
-
-
-        return classes;
-    }
-
-    private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException{
-        List<Class> classes = new ArrayList<Class>();
-        if (!directory.exists()) return classes;
-
-        File[] files = directory.listFiles();
-        for (File file : files){
-            if (file.isDirectory())
-                classes.addAll(findClasses(file, packageName + "." + file.getName()));
-            else if (file.getName().endsWith(".class"))
-                classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
-        }
-
-        return classes;
     }
 }

@@ -16,6 +16,7 @@ import java.lang.annotation.Target;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
+@SuppressWarnings("ALL")
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Effect {

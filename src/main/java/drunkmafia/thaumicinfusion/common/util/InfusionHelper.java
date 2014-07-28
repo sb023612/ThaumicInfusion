@@ -71,7 +71,7 @@ public class InfusionHelper {
         System.out.println("Infusion");
         if(list == null) return null;
         Class[] effects = getEffectsFromList(list);
-        ItemStack stack = new ItemStack(TIBlocks.infusedBlock, size, meta);
+        ItemStack stack = new ItemStack(InfusedBlock.instance, size, meta);
         NBTTagCompound tag = new NBTTagCompound();
         for(int i = 0; i < effects.length; i++){
             tag.setString("infusedAspect_" + i, effects[i].getName());

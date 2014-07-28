@@ -1,6 +1,7 @@
 package drunkmafia.thaumicinfusion.client.renderer.item;
 
 import com.sun.javafx.geom.Vec3f;
+import drunkmafia.thaumicinfusion.common.block.EssentiaBlock;
 import drunkmafia.thaumicinfusion.common.block.TIBlocks;
 import drunkmafia.thaumicinfusion.common.block.tile.InfusionCoreTile;
 import drunkmafia.thaumicinfusion.common.util.RGB;
@@ -40,37 +41,39 @@ public class EssentiaBlockRenderer implements IItemRenderer {
         RenderBlocks renderBlocks = new RenderBlocks();
         Tessellator tessellator = Tessellator.instance;
         GL11.glPushMatrix();
-        TIBlocks.essentiaBlock.setBlockBoundsForItemRender();
-        renderBlocks.setRenderBoundsFromBlock(TIBlocks.essentiaBlock);
+        EssentiaBlock.instance.setBlockBoundsForItemRender();
+        renderBlocks.setRenderBoundsFromBlock(EssentiaBlock.instance);
         GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
         GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
         RGB rgb = new RGB(Aspect.getAspect(tag.getString("aspectTag")).getColor());
         GL11.glColor4f(rgb.getR(), rgb.getG(), rgb.getB(), 1.0F);
 
+        System.out.println("Render");
+
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, -1.0F, 0.0F);
-        renderBlocks.renderFaceYNeg(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 0, stack.getItemDamage()));
+        renderBlocks.renderFaceYNeg(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 0, stack.getItemDamage()));
         tessellator.draw();
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, 1.0F, 0.0F);
-        renderBlocks.renderFaceYPos(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 1, stack.getItemDamage()));
+        renderBlocks.renderFaceYPos(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 1, stack.getItemDamage()));
         tessellator.draw();
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, 0.0F, -1.0F);
-        renderBlocks.renderFaceZNeg(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 2, stack.getItemDamage()));
+        renderBlocks.renderFaceZNeg(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 2, stack.getItemDamage()));
         tessellator.draw();
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, 0.0F, 1.0F);
-        renderBlocks.renderFaceZPos(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 3, stack.getItemDamage()));
+        renderBlocks.renderFaceZPos(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 3, stack.getItemDamage()));
         tessellator.draw();
         tessellator.startDrawingQuads();
         tessellator.setNormal(-1.0F, 0.0F, 0.0F);
-        renderBlocks.renderFaceXNeg(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 4, stack.getItemDamage()));
+        renderBlocks.renderFaceXNeg(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 4, stack.getItemDamage()));
         tessellator.draw();
         tessellator.startDrawingQuads();
         tessellator.setNormal(1.0F, 0.0F, 0.0F);
-        renderBlocks.renderFaceXPos(TIBlocks.essentiaBlock, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(TIBlocks.essentiaBlock, 5, stack.getItemDamage()));
+        renderBlocks.renderFaceXPos(EssentiaBlock.instance, 0.0D, 0.0D, 0.0D, renderBlocks.getBlockIconFromSideAndMetadata(EssentiaBlock.instance, 5, stack.getItemDamage()));
         tessellator.draw();
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
         GL11.glPopMatrix();

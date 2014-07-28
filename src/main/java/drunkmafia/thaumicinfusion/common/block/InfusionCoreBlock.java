@@ -1,5 +1,6 @@
 package drunkmafia.thaumicinfusion.common.block;
 
+import com.sun.istack.internal.NotNull;
 import drunkmafia.thaumicinfusion.common.block.tile.InfusionCoreTile;
 import drunkmafia.thaumicinfusion.common.tab.TITab;
 import net.minecraft.block.Block;
@@ -23,7 +24,7 @@ import static drunkmafia.thaumicinfusion.common.lib.BlockInfo.*;
  * <p/>
  * See http://www.wtfpl.net/txt/copying for licence
  */
-public class InfusionCoreBlock extends Block implements ITileEntityProvider {
+public class InfusionCoreBlock extends TIBlock implements ITileEntityProvider {
 
     protected InfusionCoreBlock() {
         super(Material.rock);
@@ -37,14 +38,15 @@ public class InfusionCoreBlock extends Block implements ITileEntityProvider {
 
         InfusionCoreTile tile = (InfusionCoreTile) world.getTileEntity(x, y, z);
         ItemStack stack = ent.inventory.getCurrentItem();
-        if(tile.isFormed() && !(stack.getItem() instanceof ItemWandCasting)) {
-            if (ent.isSneaking() || stack != null && tile.hasStack()) {
-                ItemStack jar = tile.takeStack();
+        if(tile.isFormed()) {
+            if(stack != null && stack.getItem() instanceof ItemWandCasting) return false;
+            if (tile.hasStack() && ent.isSneaking() || stack == null) {
+                ItemStack block = tile.takeStack();
                 if (stack == null) {
                     int index = Arrays.asList(ent.inventory.mainInventory).indexOf(stack);
-                    ent.inventory.mainInventory[index] = jar;
-                } else dropBlockAsItem(world, x, y, z, jar);
-            } else if (stack != null && stack.getItem() instanceof ItemBlock) {
+                    ent.inventory.mainInventory[index] = block;
+                } else dropBlockAsItem(world, x, y, z, block);
+            }else if (stack != null && stack.getItem() instanceof ItemBlock) {
                 int index = Arrays.asList(ent.inventory.mainInventory).indexOf(stack);
                 ent.inventory.mainInventory[index] = tile.putStack(stack);
             }

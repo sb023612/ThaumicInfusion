@@ -10,7 +10,7 @@ import drunkmafia.thaumicinfusion.client.renderer.item.*;
 import drunkmafia.thaumicinfusion.client.renderer.tile.*;
 import drunkmafia.thaumicinfusion.common.CommonProxy;
 import drunkmafia.thaumicinfusion.common.ThaumicInfusion;
-import drunkmafia.thaumicinfusion.common.block.TIBlocks;
+import drunkmafia.thaumicinfusion.common.block.*;
 import drunkmafia.thaumicinfusion.common.block.tile.*;
 import drunkmafia.thaumicinfusion.common.container.InfusedBlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,10 +32,10 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent event) {
         System.out.println("Init " + event.getSide().name());
 
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TIBlocks.essentiaBlock), new EssentiaBlockRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TIBlocks.infusionCoreBlock), new CoreItemRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TIBlocks.jarPedestalBlock), new JarPedestalItemRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TIBlocks.infusedBlock), new InfusedItemRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(EssentiaBlock.instance), new EssentiaBlockRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(InfusionCoreBlock.instance), new CoreItemRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(JarPedestalBlock.instance), new JarPedestalItemRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(InfusedBlock.instance), new InfusedItemRenderer());
 
         ClientRegistry.bindTileEntitySpecialRenderer(JarPedestalTile.class, new JarPedestalRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(InfusionCoreTile.class, new InfusionCoreRenderer());
